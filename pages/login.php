@@ -18,20 +18,42 @@ if (isset($_POST['login'])) {
         $_SESSION['role'] = $user['role'];
 
         header("Location: ../index.php");
+        exit();
     } else {
 
-        echo "Sai email hoặc mật khẩu";
+        $error = "Sai email hoặc mật khẩu";
     }
 }
 ?>
 
-<form method="POST">
+<!DOCTYPE html>
+<html lang="en">
 
-    <input type="email" name="email" placeholder="Email">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng Nhập - Milktea House</title>
+    <link rel="stylesheet" href="../css/login.css">
+</head>
 
-    <input type="password" name="password" placeholder="Password">
+<body>
+    <h2>Đăng nhập Milktea House</h2>
+    <?php
+    if (isset($error)) {
+        echo "<p style='color:red;'>$error</p>";
+    }
+    ?>
+    <form method="post">
+        <label>Email</label><br>
+        <input type="email" name="email" required placeholder="Email đăng nhập"><br>
+        <label>Mật khẩu</label><br>
+        <input type="password" name="password" required placeholder="Mật khẩu"><br>
 
-    <button name="login">Đăng nhập</button>
+        <button type="submit" name="login">Đăng nhập</button>
+    </form>
+    <div class="login-link">
+        <a href="forgotPassword.php">Quên mật khẩu?</a><br>
+        <a href="register.php">Bạn chưa có tài khoản?</a>
+    </div>
+</body>
 
-
-</form>
+</html>
