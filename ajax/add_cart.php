@@ -1,5 +1,4 @@
 <?php
-session_start();
 // $_SESSION['cart'] = [];
 
 require_once("../config/config.php");
