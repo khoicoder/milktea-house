@@ -1,148 +1,184 @@
-// thêm sản phẩm vào giỏ hàng
+/* ==============================
+   GLOBAL VARIABLES
+============================== */
+// script.js (dùng biến global được set bởi PHP)
+const BASE = (window.BASE_URL) ? window.BASE_URL : "/milktea-house/";
+// NOTE: dùng BASE thay vì BASE_URL để tránh tên trùng
+
+/* ==============================
+   ADD TO CART
+============================== */
+
 function addCart(id) {
-  // kiểm tra đăng nhập
   if (!isLoggedIn) {
     alert("Bạn cần đăng nhập để thêm sản phẩm");
-    window.location.href = "pages/login.php";
+    window.location.href = BASE + "pages/login.php";
     return;
   }
 
-  fetch("/milktea-house/ajax/add_cart.php", {
+  fetch(BASE + "ajax/add_cart.php", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: "id=" + id,
   })
-    .then((res) => res.json())
-    .then((data) => {
-      console.log(data);
+  .then((res) => res.text()) // lấy text trước để debug nếu JSON sai
+    .then((text) => {
+      // debug: nếu JSON lỗi, log toàn bộ text để kiểm tra
+      try {
+        const data = JSON.parse(text);
+        console.log("Add cart response:", data);
 
-      showToast(data.message);
-
-      if (data.status === "success") {
-        updateCartCount(data.cart_count);
+        if (data.message) showToast(data.message);
+        if (data.status === "success" && typeof data.cart_count !== "undefined") {
+          updateCartCount(data.cart_count);
+        }
+      } catch (err) {
+        console.error("Invalid JSON from add_cart.php:", err, text);
+        // hiển thị 1 thông báo thân thiện
+        showToast("Lỗi server: response không hợp lệ. Kiểm tra console.");
       }
     })
-    .catch((error) => {
-      console.error("Lỗi:", error);
+    .catch((err) => {
+      console.error("Fetch error:", err);
+      showToast("Có lỗi mạng. Vui lòng thử lại.");
     });
 }
 
-// toggle menu user
-function toggleUserMenu() {
-  let menu = document.getElementById("userDropdown");
 
-  if (menu.style.display === "block") {
-    menu.style.display = "none";
-  } else {
-    menu.style.display = "block";
-  }
-}
+/* ==============================
+   UPDATE CART COUNT
+============================== */
 
-// cập nhật số lượng giỏ hàng
 function updateCartCount(count) {
-  console.log("update cart:", count);
-
-  let cart = document.getElementById("cart-count");
+  const cart = document.getElementById("cart-count");
 
   if (cart) {
-    cart.innerText = count;
+    cart.textContent = count;
   }
 }
 
-// toast thông báo
+/* ==============================
+   USER DROPDOWN MENU
+============================== */
+
+function toggleUserMenu() {
+  const userMenu = document.querySelector(".user-menu");
+
+  if (!userMenu) return;
+
+  userMenu.classList.toggle("open");
+}
+
+/* close dropdown when click outside */
+
+document.addEventListener("click", function (e) {
+  const userMenu = document.querySelector(".user-menu");
+
+  if (!userMenu) return;
+
+  if (userMenu.contains(e.target)) return;
+
+  userMenu.classList.remove("open");
+});
+
+/* ==============================
+   TOAST NOTIFICATION
+============================== */
+
 function showToast(message) {
   const toast = document.getElementById("toast");
 
-  toast.innerText = message;
-  toast.style.display = "block";
+  if (!toast) return;
+
+  toast.textContent = message;
+  toast.classList.add("show");
 
   setTimeout(() => {
-    toast.style.display = "none";
+    toast.classList.remove("show");
   }, 2000);
 }
 
-// click ngoài dropdown thì đóng menu
-document.addEventListener("click", function (e) {
-  const dropdown = document.getElementById("userDropdown");
-  const avatar = document.querySelector(".avatar");
+/* ==============================
+   REGISTER FORM VALIDATION
+============================== */
 
-  if (!dropdown) return;
-
-  if (avatar && avatar.contains(e.target)) return;
-
-  if (dropdown.contains(e.target)) return;
-
-  dropdown.style.display = "none";
-});
-
-// validate form đăng ký
 function validateForm() {
-  let username = document.getElementById("username").value;
-  let email = document.getElementById("email").value;
-  let password = document.getElementById("password").value;
-  let confirm = document.getElementById("confirm_password").value;
+  let username = document.getElementById("username")?.value.trim();
+  let email = document.getElementById("email")?.value.trim();
+  let password = document.getElementById("password")?.value;
+  let confirm = document.getElementById("confirm_password")?.value;
 
   let valid = true;
 
-  document.getElementById("usernameError").innerText = "";
-  document.getElementById("emailError").innerText = "";
-  document.getElementById("passwordError").innerText = "";
-  document.getElementById("confirmError").innerText = "";
+  setError("usernameError", "");
+  setError("emailError", "");
+  setError("passwordError", "");
+  setError("confirmError", "");
 
-  if (username === "") {
-    document.getElementById("usernameError").innerText = "Vui lòng nhập tên";
+  if (!username) {
+    setError("usernameError", "Vui lòng nhập tên");
     valid = false;
   } else if (username.length < 3) {
-    document.getElementById("usernameError").innerText =
-      "Username phải ít nhất 3 ký tự";
+    setError("usernameError", "Username phải ít nhất 3 ký tự");
     valid = false;
   }
 
-  if (email === "") {
-    document.getElementById("emailError").innerText = "Vui lòng nhập email";
+  if (!email) {
+    setError("emailError", "Vui lòng nhập email");
     valid = false;
   }
 
-  if (password === "") {
-    document.getElementById("passwordError").innerText =
-      "Vui lòng nhập mật khẩu";
+  if (!password) {
+    setError("passwordError", "Vui lòng nhập mật khẩu");
     valid = false;
   }
 
-  if (confirm === "") {
-    document.getElementById("confirmError").innerText =
-      "Vui lòng nhập lại mật khẩu";
+  if (!confirm) {
+    setError("confirmError", "Vui lòng nhập lại mật khẩu");
     valid = false;
   }
 
-  if (password !== confirm && confirm !== "") {
-    document.getElementById("confirmError").innerText = "Mật khẩu không khớp";
-    valid = false;
-  }
-
-  if (document.getElementById("passwordError").innerText !== "") {
+  if (password !== confirm) {
+    setError("confirmError", "Mật khẩu không khớp");
     valid = false;
   }
 
   return valid;
 }
 
-// kiểm tra mật khẩu mạnh
-document.getElementById("password").addEventListener("keyup", function () {
-  let password = this.value;
-  let error = "";
+function setError(id, message) {
+  const el = document.getElementById(id);
 
-  if (password.length < 6) {
-    error = "Mật khẩu phải ít nhất 6 ký tự";
-  } else if (!/[A-Z]/.test(password)) {
-    error = "Phải có ít nhất 1 chữ in hoa";
-  } else if (!/[0-9]/.test(password)) {
-    error = "Phải có ít nhất 1 chữ số";
-  } else if (!/\W/.test(password)) {
-    error = "Phải có ký tự đặc biệt";
+  if (el) {
+    el.textContent = message;
   }
+}
 
-  document.getElementById("passwordError").innerText = error;
+/* ==============================
+   PASSWORD STRENGTH CHECK
+============================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const passwordInput = document.getElementById("password");
+
+  if (!passwordInput) return;
+
+  passwordInput.addEventListener("keyup", function () {
+    let password = this.value;
+    let error = "";
+
+    if (password.length < 6) {
+      error = "Mật khẩu phải ít nhất 6 ký tự";
+    } else if (!/[A-Z]/.test(password)) {
+      error = "Phải có ít nhất 1 chữ in hoa";
+    } else if (!/[0-9]/.test(password)) {
+      error = "Phải có ít nhất 1 chữ số";
+    } else if (!/\W/.test(password)) {
+      error = "Phải có ký tự đặc biệt";
+    }
+
+    setError("passwordError", error);
+  });
 });

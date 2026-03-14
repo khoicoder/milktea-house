@@ -1,80 +1,118 @@
-<?php include("includes/header.php"); ?>
-
-<!-- //http://localhost/milktea-house/ -->
 <?php
-require_once("config/config.php");
-$select = "SELECT * FROM products";
-$result = mysqli_query($conn, $select);
+// index.php - Product listing (uses product.css)
+require_once(__DIR__ . "/config/config.php");
 
-$category_id = $_GET['id'] ?? '';
+// page-specific css for header include
+$page_css = "product.css";
+include(__DIR__ . "/includes/header.php");
+
+// Read & sanitize filter input
+$category_id = intval($_GET['id'] ?? 0);
 $search = $_GET['search'] ?? '';
-$min = $_GET['min'] ?? '';
-$max = $_GET['max'] ?? '';
+$min = isset($_GET['min']) && $_GET['min'] !== '' ? intval($_GET['min']) : 0;
+$max = isset($_GET['max']) && $_GET['max'] !== '' ? intval($_GET['max']) : 1000000;
 
-$search = mysqli_real_escape_string($conn, $search);
-
-$sql = "SELECT * FROM products WHERE 1";
-
-if ($category_id != '') {
-    $sql .= " AND category_id = $category_id";
+// Ensure min <= max
+if ($min > $max) {
+    $tmp = $min; $min = $max; $max = $tmp;
 }
 
-if ($search != '') {
-    $sql .= " AND name LIKE '%$search%'";
+$search_esc = mysqli_real_escape_string($conn, $search);
+
+// Build SQL safely (simple approach)
+$sql = "SELECT id, name, price, image, description FROM products WHERE price BETWEEN {$min} AND {$max}";
+
+if ($category_id > 0) {
+    $sql .= " AND category_id = {$category_id}";
 }
 
-if ($min != '' && $max != '') {
-    $sql .= " AND price BETWEEN $min AND $max";
+if ($search_esc !== '') {
+    $sql .= " AND name LIKE '%{$search_esc}%'";
 }
+
+$sql .= " ORDER BY id DESC";
 
 $result = mysqli_query($conn, $sql);
 ?>
-<section class="products">
 
-    <form method="GET">
+<section class="products product-page">
+  <div class="container">
 
-        <input type="hidden" name="id" value="<?php echo $category_id; ?>">
+    <h2 class="products-title">Đồ uống phổ biến</h2>
 
-        <input type="text" name="search" placeholder="Tìm sản phẩm">
+    <!-- Filter form -->
+    <form method="GET" class="filter-form" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px;">
+      <input type="hidden" name="id" value="<?= htmlspecialchars($category_id) ?>">
 
-        <label>Giá từ</label>
-        <input type="number" name="min" value="0">
+      <input
+        type="text"
+        name="search"
+        class="u-muted"
+        placeholder="Tìm sản phẩm..."
+        value="<?= htmlspecialchars($search) ?>"
+        style="flex:1;min-width:180px;padding:8px;border-radius:8px;border:1px solid #e7e7ea;"
+      >
 
-        <label>đến</label>
-        <input type="number" name="max" value="100">
+      <label class="u-muted" style="margin:0 6px 0 0;">Giá từ</label>
+      <input type="number" name="min" value="<?= htmlspecialchars($min) ?>" min="0" style="width:110px;padding:8px;border-radius:8px;border:1px solid #e7e7ea;">
 
-        <button type="submit">Lọc</button>
+      <label class="u-muted" style="margin:0 6px 0 0;">đến</label>
+      <input type="number" name="max" value="<?= htmlspecialchars($max) ?>" min="0" style="width:110px;padding:8px;border-radius:8px;border:1px solid #e7e7ea;">
 
+      <button type="submit" class="btn btn-outline" style="padding:9px 14px;border-radius:10px;">Lọc</button>
     </form>
-    <h2>Đồ uống phổ biến</h2>
 
-    <div class="grid">
+    <!-- Grid -->
+    <div class="product-grid">
+      <?php if ($result && mysqli_num_rows($result) > 0): ?>
+        <?php while ($row = mysqli_fetch_assoc($result)): ?>
+          <article class="product-card" aria-labelledby="prod-<?= $row['id'] ?>">
+            <a class="product-thumb" href="<?= BASE_URL ?>pages/product_detail.php?id=<?= $row['id'] ?>" aria-label="<?= htmlspecialchars($row['name']) ?>">
+              <img
+                src="<?= BASE_URL ?>images/<?= htmlspecialchars($row['image'] ?? '') ?>"
+                alt="<?= htmlspecialchars($row['name']) ?>"
+                onerror="this.onerror=null;this.src='<?= BASE_URL ?>images/no-image.png';"
+              >
+            </a>
 
-        <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+            <div class="product-info">
+              <a id="prod-<?= $row['id'] ?>" class="product-name" href="<?= BASE_URL ?>pages/product_detail.php?id=<?= $row['id'] ?>">
+                <?= htmlspecialchars($row['name']) ?>
+              </a>
 
-            <div class="card">
-                
+              <p class="product-desc"><?= htmlspecialchars($row['description'] ?? '') ?></p>
 
-                <div class="img-box">
-                    <a href="<?= BASE_URL ?>pages/product_detail.php?id=<?= $row['id'] ?>">
-                        <img src="images/<?php echo $row['image']; ?>">
-                    </a>
+              <div class="product-meta">
+                <div class="price-wrap">
+                  <div class="price-sale"><?= number_format($row['price'], 0, ',', '.') ?> VNĐ</div>
                 </div>
 
-                <h3><?php echo $row['name']; ?></h3>
-                <p><?= number_format($row['price']) ?> VNĐ</p>
-                <p><?php echo $row['description']; ?></p>
+                <div class="rating u-muted" aria-hidden="true">
+                  <!-- optional stars / reviews -->
+                </div>
+              </div>
 
+              <div class="card-footer" style="margin-top:10px;">
+                <button class="btn btn-primary" type="button" onclick="addCart(<?= (int)$row['id'] ?>)">
+                  Thêm vào giỏ
+                </button>
 
-                <button onclick="addCart(<?php echo $row['id']; ?>)">thêm vào giỏ hàng</button>
-
+                <a class="btn btn-outline" href="<?= BASE_URL ?>pages/product_detail.php?id=<?= $row['id'] ?>" style="text-decoration:none;">
+                  Xem chi tiết
+                </a>
+              </div>
             </div>
-
-        <?php } ?>
-
+          </article>
+        <?php endwhile; ?>
+      <?php else: ?>
+        <div class="u-center" style="grid-column:1/-1;padding:40px 0;">
+          <p class="u-muted">Không tìm thấy sản phẩm phù hợp.</p>
+          <a href="<?= BASE_URL ?>" class="btn btn-outline">Xem tất cả</a>
+        </div>
+      <?php endif; ?>
     </div>
 
+  </div>
 </section>
 
-
-<?php include("includes/footer.php"); ?>
+<?php include(__DIR__ . "/includes/footer.php"); ?>

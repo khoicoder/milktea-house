@@ -25,8 +25,6 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
 }
 ?>
 
-<?php require_once(__DIR__ . "/../config/config.php"); ?>
-
 <?php
 $currentUser = null;
 
@@ -50,9 +48,17 @@ $currentUser = mysqli_fetch_assoc($result);
 <html>
 <head>
 <meta charset="UTF-8">
-<title>MilkTea House</title>
+<title>MilkTea House 5aem</title>
 
-<link rel="stylesheet" href="<?= BASE_URL ?>css/style.css">
+
+<link rel="stylesheet" href="<?=BASE_URL?>css/base.css">
+<link rel="stylesheet" href="<?=BASE_URL?>css/layout.css">
+
+<?php
+if(isset($page_css)){
+echo '<link rel="stylesheet" href="'.BASE_URL.'css/' . $page_css . '">';
+}
+?>
 <script src="<?= BASE_URL ?>js/script.js"></script>
 
 </head>
@@ -126,8 +132,8 @@ Xin chào, <?= htmlspecialchars($currentUser['display_name'] ?: $currentUser['us
 
 </header>
 <script>
-
-let isLoggedIn = <?= isset($_SESSION['user_id']) ? 'true' : 'false' ?>;
+ window.BASE_URL = "<?php echo rtrim(BASE_URL, '/'); ?>/";
+ window.isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
 
 function checkLogin() {
 
@@ -135,7 +141,7 @@ function checkLogin() {
 
     alert("Vui lòng đăng nhập để xem giỏ hàng");
 
-    window.location.href = "<?= BASE_URL ?>pages/login.php";
+    window.location.href = window.BASE_URL + "pages/login.php";
 
     return false;
   }

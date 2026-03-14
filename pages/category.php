@@ -1,87 +1,147 @@
-<?php include("../includes/header.php"); ?>
 <?php
+require_once(__DIR__ . "/../config/config.php");
 
-$category_id = $_GET['id'] ?? 0;
+$page_css = "product.css";
+include(__DIR__ . "/../includes/header.php");
+
+// Lấy filter
+$category_id = intval($_GET['id'] ?? 0);
 $search = $_GET['search'] ?? '';
-$min = $_GET['min'] ?? 0;
-$max = $_GET['max'] ?? 100;
+$min = isset($_GET['min']) && $_GET['min'] !== '' ? intval($_GET['min']) : 0;
+$max = isset($_GET['max']) && $_GET['max'] !== '' ? intval($_GET['max']) : 1000000;
 
-$search = mysqli_real_escape_string($conn,$search);
+// đảm bảo min <= max
+if ($min > $max) {
+    $tmp = $min;
+    $min = $max;
+    $max = $tmp;
+}
 
-$sql = "SELECT * FROM products 
-        WHERE category_id = $category_id
-        AND name LIKE '%$search%'
-        AND price BETWEEN $min AND $max";
+$search_esc = mysqli_real_escape_string($conn, $search);
 
-$result = mysqli_query($conn,$sql);
+// Query
+$sql = "SELECT id, name, price, image, description
+        FROM products
+        WHERE category_id = {$category_id}
+        AND price BETWEEN {$min} AND {$max}";
 
+if ($search_esc !== '') {
+    $sql .= " AND name LIKE '%{$search_esc}%'";
+}
 
+$sql .= " ORDER BY id DESC";
 
+$result = mysqli_query($conn, $sql);
 ?>
 
-<section class="products">
+<section class="product-page products">
 
-<h2>Sản phẩm</h2>
+<div class="container">
 
-<form method="GET">
+<h2 class="products-title">Sản phẩm</h2>
 
-<input type="hidden" name="id" value="<?php echo $category_id; ?>">
+<form method="GET" class="filter-form" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px;">
 
-<input type="text" name="search" placeholder="Tìm sản phẩm">
+<input type="hidden" name="id" value="<?= htmlspecialchars($category_id) ?>">
+
+<input
+type="text"
+name="search"
+placeholder="Tìm sản phẩm..."
+value="<?= htmlspecialchars($search) ?>"
+style="flex:1;min-width:180px;padding:8px;border-radius:8px;border:1px solid #e7e7ea;"
+>
 
 <label>Giá từ</label>
-<input type="number" name="min" value="0">
+<input
+type="number"
+name="min"
+value="<?= htmlspecialchars($min) ?>"
+style="width:110px;padding:8px;border-radius:8px;border:1px solid #e7e7ea;"
+>
 
 <label>đến</label>
-<input type="number" name="max" value="100">
+<input
+type="number"
+name="max"
+value="<?= htmlspecialchars($max) ?>"
+style="width:110px;padding:8px;border-radius:8px;border:1px solid #e7e7ea;"
+>
 
-<button type="submit">Lọc</button>
+<button type="submit" class="btn btn-outline">Lọc</button>
 
 </form>
 
-<div class="grid">
+<div class="product-grid">
 
-<?php while($row = mysqli_fetch_assoc($result)){ ?>
+<?php if ($result && mysqli_num_rows($result) > 0): ?>
 
-<div class="card">
+<?php while ($row = mysqli_fetch_assoc($result)) { ?>
 
+<div class="product-card">
 
-<div class="img-box">
-        <a href="<?= BASE_URL ?>pages/product_detail.php?id=<?= $row['id'] ?>">
-                 <img src="images/<?php echo $row['image']; ?>">
-                    </a>
+<a class="product-thumb" href="<?= BASE_URL ?>pages/product_detail.php?id=<?= $row['id'] ?>">
+
+<img
+src="<?= BASE_URL ?>images/<?= htmlspecialchars($row['image']) ?>"
+alt="<?= htmlspecialchars($row['name']) ?>"
+onerror="this.onerror=null;this.src='<?= BASE_URL ?>images/no-image.png';"
+>
+
+</a>
+
+<div class="product-info">
+
+<a class="product-name" href="<?= BASE_URL ?>pages/product_detail.php?id=<?= $row['id'] ?>">
+<?= htmlspecialchars($row['name']) ?>
+</a>
+
+<p class="product-desc">
+<?= htmlspecialchars($row['description'] ?? '') ?>
+</p>
+
+<div class="price-wrap">
+<div class="price-sale">
+<?= number_format($row['price'],0,',','.') ?> VNĐ
+</div>
 </div>
 
-<h3><?php echo $row['name']; ?></h3>
+<div class="card-footer">
 
-<p>$<?php echo $row['price']; ?></p>
+<button
+class="btn btn-primary"
+onclick="addCart(<?= (int)$row['id'] ?>)"
+>
+Thêm vào giỏ
+</button>
 
-<button onclick="addCart(<?php echo $row['id']; ?>)">thêm vào giỏ hàng</button>
+<a
+class="btn btn-outline"
+href="<?= BASE_URL ?>pages/product_detail.php?id=<?= $row['id'] ?>"
+>
+Xem
+</a>
+
+</div>
+
+</div>
 
 </div>
 
 <?php } ?>
 
+<?php else: ?>
+
+<div class="u-center" style="grid-column:1/-1;padding:40px;">
+Không tìm thấy sản phẩm
+</div>
+
+<?php endif; ?>
+
+</div>
+
 </div>
 
 </section>
 
-<?php include("../includes/footer.php"); ?>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-`       `       ``
+<?php include(__DIR__ . "/../includes/footer.php"); ?>

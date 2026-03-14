@@ -1,0 +1,303 @@
+/* product.css - MilkTea House
+   Scoped to .product-page / .product-card to avoid conflicts
+*/
+
+:root {
+  /* brand palette */
+  --brand: #ff5a5f;
+  --brand-dark: #e84a4f;
+  --muted: #777;
+  --text: #222;
+  --bg: #ffffff;
+  --surface-shadow: 0 6px 18px rgba(18, 24, 33, 0.06);
+  --radius: 12px;
+  --transition: 200ms ease;
+}
+
+/* Page wrapper (use .product-page if you want to scope entire page) */
+.product-page,
+.products {
+  --container-padding: 20px;
+}
+
+.product-page .container,
+.products .container,
+.products {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px var(--container-padding);
+  box-sizing: border-box;
+  color: var(--text);
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+/* Title */
+.product-page .products-title,
+.products-title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 28px;
+  color: var(--text);
+}
+
+/* Grid */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 22px;
+  align-items: stretch;
+}
+
+/* Product card */
+.product-card {
+  background: var(--bg);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--surface-shadow);
+  display: flex;
+  flex-direction: column;
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
+  position: relative;
+}
+
+/* hover lift */
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(18, 24, 33, 0.12);
+}
+
+/* Thumbnail area */
+.product-thumb {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  height: 210px;
+  background: linear-gradient(180deg, #f9f9fb, #ffffff);
+  text-decoration: none;
+}
+
+.product-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+/* zoom on hover */
+.product-card:hover .product-thumb img {
+  transform: scale(1.04);
+}
+
+/* Badges (sale, new) */
+.product-thumb .badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 8px;
+  color: #fff;
+  background: var(--brand);
+  box-shadow: 0 6px 14px rgba(255, 90, 95, 0.12);
+}
+
+/* quick add button (icon over thumb) */
+.btn-quick-add {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  box-shadow: 0 6px 18px rgba(10, 10, 10, 0.06);
+  transition:
+    transform 160ms ease,
+    background 160ms ease;
+}
+.btn-quick-add:hover {
+  transform: translateY(-4px);
+  background: #fff;
+}
+
+/* Product info */
+.product-info {
+  padding: 14px 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+/* name */
+.product-name {
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.product-name:hover {
+  color: var(--brand);
+  text-decoration: underline;
+}
+
+/* short desc */
+.product-desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.3;
+  min-height: 38px;
+}
+
+/* meta row */
+.product-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+/* rating */
+.rating {
+  font-size: 13px;
+  color: #ffb400; /* star color */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.rating .reviews {
+  color: var(--muted);
+  font-size: 12px;
+  margin-left: 6px;
+}
+
+/* price */
+.price-wrap,
+.price-wrap * {
+  box-sizing: border-box;
+}
+.price-wrap {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+/* sale price and old price */
+.price-sale {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--brand);
+}
+.price-old {
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+/* footer actions */
+.card-footer {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+  align-items: center;
+}
+
+/* buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition:
+    background var(--transition),
+    transform var(--transition);
+  font-size: 14px;
+}
+
+.btn-primary {
+  background: var(--brand);
+  color: white;
+  flex: 1;
+}
+.btn-primary:hover {
+  background: var(--brand-dark);
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid #e7e7ea;
+  color: var(--text);
+  padding: 8px 12px;
+}
+
+/* accessibility focus */
+.btn:focus,
+.product-thumb:focus,
+.product-name:focus {
+  outline: 3px solid rgba(255, 90, 95, 0.15);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* responsiveness */
+@media (max-width: 1024px) {
+  .product-thumb {
+    height: 190px;
+  }
+  .product-grid {
+    gap: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+  }
+  .product-thumb {
+    height: 160px;
+  }
+  .product-info {
+    padding: 10px;
+  }
+  .btn-primary {
+    padding: 9px;
+    font-size: 13px;
+  }
+}
+
+/* prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* utility: small helpers used across project */
+.u-muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+.u-center {
+  text-align: center;
+}

@@ -1,6 +1,32 @@
 <?php
 require_once(__DIR__ . "/../config/config.php");
 
+
+//QL Injection (mức độ: nguy hiểm)
+
+// Đoạn này:
+
+// $ids = implode(',', array_keys($_SESSION['cart']));
+// $sql = "SELECT id, name, price, image, stock FROM products WHERE id IN ($ids)";
+
+// Nếu session bị sửa hoặc inject, query có thể bị phá.
+
+///BASE_URL bị khai báo nhiều lần
+//placeholder image gây spam console
+//calculateTotal() có thể crash  Nếu element bị xóa trước khi JS chạy = lỗi.
+//removeSelectedItems gửi JSON chưa chuẩn
+
+// Cải tiến: Tạo biến BASE_URL và isLoggedIn toàn cục để dùng trong JS
+//updateQty() thiếu kiểm tra stock
+
+// Hiện tại bạn chỉ check server.
+
+// Nhưng client vẫn có thể spam nút + để tăng số lượng vượt stock trước khi server phản hồi. Cần disable nút + nếu đạt giới hạn stock.
+//removeSelectedItems gửi JSON chưa chuẩn - nên gửi status và message để JS xử lý tốt hơn, thay vì chỉ gửi cart_count.
+
+//gọi: document.getElementById
+//      document.querySelectorAll rất nhiều lần. Nên cache lại nếu dùng nhiều lần trong cùng 1 hàm 
+
 // Kiểm tra đăng nhập
 if (!isset($_SESSION['user_id'])) {
     header("Location: " . BASE_URL . "pages/login.php");
@@ -20,57 +46,10 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
     }
 }
 
-include(__DIR__ . "/../includes/header.php");
+$page_css="cart.css";
+include("../includes/header.php");
 ?>
-
-<style>
-/* CSS Giao diện Giỏ hàng - Đã đồng bộ màu với style.css */
-.cart-wrapper { max-width: 1200px; margin: 20px auto; font-family: "Inter", "Segoe UI", sans-serif; color: #333;}
-.cart-box { background: #fff; border-radius: 12px; padding: 15px 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); display: flex; align-items: center; }
-.cart-header { color: #888; font-size: 14px; font-weight: 600;}
-.col-check { width: 5%; }
-.col-product { width: 45%; display: flex; align-items: center; }
-.col-price { width: 15%; text-align: center; color: #757575; }
-.col-qty { width: 15%; text-align: center; }
-.col-subtotal { width: 10%; text-align: center; color: #ff5a5f; font-weight: bold;} /* Đổi sang màu web */
-.col-action { width: 10%; text-align: center; }
-
-.product-img { width: 80px; height: 80px; object-fit: cover; border: 1px solid #e1e1e1; margin-right: 15px; border-radius: 8px;}
-.product-name { font-size: 15px; line-height: 1.4; color: #333; text-decoration: none; font-weight: 500;}
-.product-name:hover { color: #ff5a5f; }
-
-/* Nút tăng giảm số lượng */
-.qty-control { display: inline-flex; border: 1px solid #ddd; border-radius: 6px; overflow: hidden;}
-.qty-btn { width: 32px; height: 32px; background: #f6f7fb; border: none; cursor: pointer; font-size: 16px; outline: none; color: #333; transition: 0.2s;}
-.qty-btn:hover { background: #e0e0e0; }
-.qty-input { width: 40px; height: 32px; border-left: 1px solid #ddd; border-right: 1px solid #ddd; border-top: none; border-bottom: none; text-align: center; outline: none; font-weight: 500;}
-
-/* Nút xóa */
-.btn-delete { color: #333; cursor: pointer; background: none; border: none; font-size: 14px; font-weight: 500; transition: 0.2s;}
-.btn-delete:hover { color: #ff5a5f; }
-
-/* Phần Footer thanh toán */
-.cart-footer { position: sticky; bottom: 0; background: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -4px 12px rgba(0,0,0,0.05); z-index: 100; border-radius: 12px;}
-.footer-left { display: flex; align-items: center; gap: 20px; font-weight: 500;}
-.footer-right { display: flex; align-items: center; gap: 20px; }
-
-.discount-area { display: flex; align-items: center; gap: 10px; border-right: 1px solid #eee; padding-right: 20px;}
-.discount-area input { padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; width: 200px; outline: none;}
-.discount-area button { padding: 10px 18px; background: #ff5a5f; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s;}
-.discount-area button:hover { background: #e84a4f; }
-
-.total-text { font-size: 16px; font-weight: 500;}
-.total-price { font-size: 24px; color: #ff5a5f; font-weight: bold; margin-left: 10px;}
-.btn-checkout { background: #ff5a5f; color: #fff; padding: 13px 40px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s;}
-.btn-checkout:hover { background: #e84a4f; }
-
-/* Giỏ hàng trống */
-.empty-cart { text-align: center; padding: 80px 0; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);}
-.empty-cart p { color: #888; margin-bottom: 25px; font-size: 16px; font-weight: 500;}
-.btn-go-shop { background: #ff5a5f; color: #fff; padding: 12px 40px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; transition: 0.2s;}
-.btn-go-shop:hover { background: #e84a4f; }
-</style>
-
+    <div class="cart-page">
 <div class="cart-wrapper">
     <?php if (empty($cart_items)): ?>
         <div class="empty-cart">
@@ -139,6 +118,7 @@ include(__DIR__ . "/../includes/header.php");
             </div>
         </div>
     <?php endif; ?>
+</div>
 </div>
 
 <script>

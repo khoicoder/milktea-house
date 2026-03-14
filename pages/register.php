@@ -1,5 +1,11 @@
 <?php
 include("../config/config.php");
+
+$page_css="auth.css";
+
+if(isset($page_css)){
+echo '<link rel="stylesheet" href="'.BASE_URL.'css/' . $page_css . '">';
+}
 global $conn;
 //biến
 $username = "";
@@ -74,38 +80,55 @@ if (isset($_POST["register"])) {
 </head>
 
 <body>
-    <div class="register-container">
 
-        <h2>Đăng ký tài khoản</h2>
+<div class="auth-container">
 
-        <form method="POST" onsubmit="return validateForm()" novalidate>
+```
+<div class="auth-box">
 
-            <label>Tên người dùng</label><br>
-            <input type="text" name="username" id="username" value="<?php echo htmlspecialchars($username); ?>"><br>
-            <span class="error" id="usernameError"><?php echo $usernameError ?? ''; ?></span><br>
+    <h2>Đăng ký tài khoản</h2>
 
-            <label>Email</label><br>
-            <input type="email" name="email" id="email" value="<?php echo htmlspecialchars($email); ?>"><br>
-            <span class="error" id="emailError"><?php echo $emailError ?? ''; ?></span><br>
+    <form method="POST" onsubmit="return validateForm()" novalidate>
 
-            <label>Mật khẩu</label><br>
-            <input type="password" name="password" id="password"><br>
-            <span class="error" id="passwordError"><?php echo $passwordError ?? ''; ?></span><br>
+        <label>Tên người dùng</label>
+        <input type="text" name="username" id="username"
+            value="<?php echo htmlspecialchars($username); ?>">
+        <span class="auth-error" id="usernameError">
+            <?php echo $usernameError ?? ''; ?>
+        </span>
 
-            <label>Xác nhận lại mật khẩu</label><br>
-            <input type="password" name="confirm_password" id="confirm_password"><br>
-            <span class="error" id="confirmError"></span><br>
+        <label>Email</label>
+        <input type="email" name="email" id="email"
+            value="<?php echo htmlspecialchars($email); ?>">
+        <span class="auth-error" id="emailError">
+            <?php echo $emailError ?? ''; ?>
+        </span>
 
-            <button type="submit" name="register">Đăng ký</button>
+        <label>Mật khẩu</label>
+        <input type="password" name="password" id="password">
+        <span class="auth-error" id="passwordError">
+            <?php echo $passwordError ?? ''; ?>
+        </span>
 
-        </form>
+        <label>Xác nhận lại mật khẩu</label>
+        <input type="password" name="confirm_password" id="confirm_password">
+        <span class="auth-error" id="confirmError"></span>
 
-        <div class="register-link">
-            <a href="login.php">Đã có tài khoản?</a>
-        </div>
+        <button type="submit" name="register">Đăng ký</button>
 
+    </form>
+
+    <div class="auth-links">
+        <a href="login.php">Đã có tài khoản? Đăng nhập</a>
     </div>
-    <script src="../js/script.js"></script>
+
+</div>
+```
+
+</div>
+
+<script src="../js/script.js"></script>
+
 </body>
 
 </html>

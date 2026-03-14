@@ -1,5 +1,12 @@
 <?php
 include("../config/config.php");
+
+$page_css="auth.css";
+if(isset($page_css)){
+    echo '<link rel="stylesheet" href="'.BASE_URL.'css/' . $page_css . '">';
+}
+
+
 global $conn;
 if (isset($_POST['login'])) {
 
@@ -32,28 +39,44 @@ if (isset($_POST['login'])) {
 <head>
     <meta charset="UTF-8">
     <title>Đăng Nhập - Milktea House</title>
-    <link rel="stylesheet" href="../css/login.css">
+
 </head>
 
 <body>
-    <h2>Đăng nhập Milktea House</h2>
-    <?php
-    if (isset($error)) {
-        echo "<p style='color:red;'>$error</p>";
-    }
-    ?>
-    <form method="post">
-        <label>Email</label><br>
-        <input type="email" name="email" required placeholder="Email đăng nhập"><br>
-        <label>Mật khẩu</label><br>
-        <input type="password" name="password" required placeholder="Mật khẩu"><br>
 
-        <button type="submit" name="login">Đăng nhập</button>
-    </form>
-    <div class="login-link">
-        <a href="forgotPassword.php">Quên mật khẩu?</a><br>
-        <a href="register.php">Bạn chưa có tài khoản?</a>
+<div class="auth-container">
+
+    <div class="auth-box">
+
+        <h2>Đăng nhập Milktea House</h2>
+
+        <?php
+        if (isset($error)) {
+            echo "<div class='auth-error'>$error</div>";
+        }
+        ?>
+
+        <form method="post">
+
+            <label>Email</label>
+            <input type="email" name="email" required placeholder="Email đăng nhập">
+
+            <label>Mật khẩu</label>
+            <input type="password" name="password" required placeholder="Mật khẩu">
+
+            <button type="submit" name="login">Đăng nhập</button>
+
+        </form>
+
+        <div class="auth-links">
+            <a href="forgotPassword.php">Quên mật khẩu?</a>
+            <a href="register.php">Bạn chưa có tài khoản?</a>
+        </div>
+
     </div>
+
+</div>
+
 </body>
 
 </html>

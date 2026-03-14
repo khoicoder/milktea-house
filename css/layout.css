@@ -1,0 +1,211 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 40px;
+  background: #ff5a5f;
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: 700;
+  text-decoration: none;
+  color: white;
+}
+
+.menu {
+  display: flex;
+  gap: 20px;
+}
+
+.menu a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.menu a:hover {
+  opacity: 0.8;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+  cursor: pointer;
+}
+
+/* ===== Header dropdown: non-intrusive, no layout shift ===== */
+.header {
+  /* đảm bảo header không thay đổi khi dropdown bật */
+  position: relative;
+  z-index: 900;
+}
+
+/* wrapper giới hạn width (nếu chưa có) */
+.header .header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px; /* ổn định chiều cao header */
+  box-sizing: border-box;
+}
+
+/* user menu */
+.user-menu {
+  position: relative; /* tạo context cho dropdown absolute */
+  display: inline-block;
+}
+
+/* dropdown mặc định ẩn, không chiếm chỗ */
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 8px); /* nằm dưới avatar */
+  right: 0;
+  min-width: 200px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  padding: 12px;
+  box-sizing: border-box;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease,
+    visibility 180ms;
+  pointer-events: none; /* tránh click khi ẩn */
+  z-index: 1000;
+}
+
+/* khi mở thì hiển thị bằng opacity (không reflow) */
+.user-menu.open .user-dropdown {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* style trong dropdown */
+.user-dropdown a {
+  display: block;
+  color: #333;
+  padding: 8px 6px;
+  text-decoration: none;
+  border-radius: 6px;
+}
+.user-dropdown a:hover {
+  background: #f6f6f6;
+}
+
+/* avatar pointer & prevent layout shift on focus */
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  display: inline-block;
+}
+
+/* tránh outline làm layout nhảy — dùng box-shadow khi focus */
+.avatar:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 90, 95, 0.12);
+  border-radius: 50%;
+}
+
+/* các liên kết menu không thay đổi kích thước khi focus */
+.menu a {
+  outline: none;
+}
+.menu a:focus {
+  box-shadow: 0 6px 18px rgba(255, 90, 95, 0.08);
+  border-radius: 6px;
+}
+
+/* đảm bảo header-right không thay đổi kích thước */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.user-menu {
+  position: relative;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: 0.2s;
+}
+
+.user-menu.open .user-dropdown {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.user-menu {
+  position: relative;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 45px;
+  right: 0;
+
+  background: white;
+  min-width: 160px;
+
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+
+  padding: 10px;
+
+  display: none;
+  z-index: 999;
+}
+
+/* khi mở */
+
+.user-menu.open .user-dropdown {
+  display: block;
+}
+
+.user-dropdown a {
+  display: block;
+  padding: 8px;
+  color: #333;
+  text-decoration: none;
+}
+
+.user-dropdown a:hover {
+  background: #f5f5f5;
+}
+
+.user-name {
+  font-weight: 600;
+  padding: 6px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 6px;
+}

@@ -1,0 +1,247 @@
+/* =========================
+   CART PAGE
+========================= */
+
+.cart-page {
+  max-width: 1200px;
+  margin: 40px auto;
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+/* =========================
+   Cart row
+========================= */
+
+.cart-page .cart-box {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: 0.2s;
+}
+
+.cart-page .cart-box:hover {
+  transform: translateY(-2px);
+}
+
+/* header row */
+
+.cart-page .cart-header {
+  font-weight: 600;
+  color: #777;
+}
+
+/* =========================
+   Columns
+========================= */
+
+.cart-page .col-check {
+  width: 5%;
+}
+.cart-page .col-product {
+  width: 40%;
+  display: flex;
+  align-items: center;
+}
+.cart-page .col-price {
+  width: 15%;
+  text-align: center;
+}
+.cart-page .col-qty {
+  width: 15%;
+  text-align: center;
+}
+.cart-page .col-subtotal {
+  width: 15%;
+  text-align: center;
+  color: #ff5a5f;
+  font-weight: 700;
+}
+.cart-page .col-action {
+  width: 10%;
+  text-align: center;
+}
+
+/* =========================
+   Product
+========================= */
+
+.cart-page .product-img {
+  width: 70px;
+  height: 70px;
+  border-radius: 10px;
+  object-fit: cover;
+  margin-right: 12px;
+}
+
+.cart-page .product-name {
+  font-weight: 600;
+  color: #333;
+  text-decoration: none;
+}
+
+.cart-page .product-name:hover {
+  color: #ff5a5f;
+}
+
+/* =========================
+   Quantity
+========================= */
+
+.cart-page .qty-control {
+  display: inline-flex;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cart-page .qty-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #f6f7fb;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.cart-page .qty-btn:hover {
+  background: #eee;
+}
+
+.cart-page .qty-input {
+  width: 40px;
+  border: none;
+  text-align: center;
+}
+
+/* =========================
+   Delete
+========================= */
+
+.cart-page .btn-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #555;
+}
+
+.cart-page .btn-delete:hover {
+  color: #ff5a5f;
+}
+
+/* =========================
+   Footer
+========================= */
+
+.cart-page .cart-footer {
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.05);
+  margin-top: 20px;
+}
+
+.cart-page .footer-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.cart-page .footer-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* =========================
+   Discount
+========================= */
+
+.cart-page .discount-area {
+  display: flex;
+  gap: 10px;
+}
+
+.cart-page .discount-area input {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.cart-page .discount-area button {
+  background: #ff5a5f;
+  border: none;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cart-page .discount-area button:hover {
+  background: #e84a4f;
+}
+
+/* =========================
+   Total
+========================= */
+
+.cart-page .total-text {
+  font-size: 16px;
+}
+
+.cart-page .total-price {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ff5a5f;
+  margin-left: 10px;
+}
+
+/* =========================
+   Checkout button
+========================= */
+
+.cart-page .btn-checkout {
+  background: #ff5a5f;
+  color: #fff;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.cart-page .btn-checkout:hover {
+  background: #e84a4f;
+}
+
+/* =========================
+   Empty cart
+========================= */
+
+.cart-page .empty-cart {
+  text-align: center;
+  padding: 80px 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.cart-page .btn-go-shop {
+  background: #ff5a5f;
+  color: #fff;
+  padding: 12px 30px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.cart-page .btn-go-shop:hover {
+  background: #e84a4f;
+}

@@ -26,7 +26,9 @@ exit();
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="../css/style_product-detail.css">
+<?php $page_css="product-detail.css";
+    include("../includes/header.php");
+?>
 
 <title><?php echo $product['name']; ?></title>
 
@@ -52,8 +54,12 @@ exit();
 <?php echo $product['description']; ?>
 </p>
 
-<button class="buy-btn">Mua ngay</button>
-<button class="cart-btn">Thêm vào giỏ hàng</button>
+ <button class="buy-btn">Mua ngay</button>
+<!-- thêm vào giỏ hàng sẽ có ajax riêng, tránh reload trang mất luôn trạng thái -->
+ <!-- // NOTE: dùng BASE_URL từ config để tránh lỗi đường dẫn khi deploy -->
+<button class="cart-btn" onclick="addCart(<?php echo $product['id']; ?>)">Thêm vào giỏ hàng</button>
+
+
 
 </div>
 
