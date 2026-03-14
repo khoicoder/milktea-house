@@ -64,9 +64,9 @@ function validateForm() {
   if (username === "") {
     document.getElementById("usernameError").innerText = "Vui lòng nhập tên";
     valid = false;
-  }
-  else if (username.length < 3) {
-    document.getElementById("usernameError").innerText = "Username phải ít nhất 3 ký tự";
+  } else if (username.length < 3) {
+    document.getElementById("usernameError").innerText =
+      "Username phải ít nhất 3 ký tự";
     valid = false;
   }
   if (email === "") {
@@ -74,18 +74,20 @@ function validateForm() {
     valid = false;
   }
   if (password === "") {
-    document.getElementById("passwordError").innerText = "Vui lòng nhập mật khẩu";
+    document.getElementById("passwordError").innerText =
+      "Vui lòng nhập mật khẩu";
     valid = false;
   }
   if (confirm === "") {
-    document.getElementById("confirmError").innerText = "Vui lòng nhập lại mật khẩu";
+    document.getElementById("confirmError").innerText =
+      "Vui lòng nhập lại mật khẩu";
     valid = false;
   }
   if (password !== confirm && confirm !== "") {
     document.getElementById("confirmError").innerText = "Mật khẩu không khớp";
     valid = false;
   }
-  //nhắc pass yếu 
+  //nhắc pass yếu
   if (document.getElementById("passwordError").innerText !== "") {
     valid = false;
   }
@@ -93,23 +95,18 @@ function validateForm() {
 }
 //check mật khẩu đủ điều kiện không
 document.getElementById("password").addEventListener("keyup", function () {
-
   let password = this.value;
   let error = "";
 
   if (password.length < 6) {
     error = "Mật khẩu phải ít nhất 6 ký tự";
-  }
-  else if (!/[A-Z]/.test(password)) {
+  } else if (!/[A-Z]/.test(password)) {
     error = "Phải có ít nhất 1 chữ in hoa";
-  }
-  else if (!/[0-9]/.test(password)) {
+  } else if (!/[0-9]/.test(password)) {
     error = "Phải có ít nhất 1 chữ số";
-  }
-  else if (!/\W/.test(password)) {
+  } else if (!/\W/.test(password)) {
     error = "Phải có ký tự đặc biệt";
   }
 
   document.getElementById("passwordError").innerText = error;
-
 });

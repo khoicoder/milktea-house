@@ -53,9 +53,12 @@ $result = mysqli_query($conn, $sql);
         <?php while ($row = mysqli_fetch_assoc($result)) { ?>
 
             <div class="card">
+                
 
                 <div class="img-box">
-                    <img src="images/<?php echo $row['image']; ?>">
+                    <a href="<?= BASE_URL ?>pages/product_detail.php?id=<?= $row['id'] ?>">
+                        <img src="images/<?php echo $row['image']; ?>">
+                    </a>
                 </div>
 
                 <h3><?php echo $row['name']; ?></h3>

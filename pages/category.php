@@ -45,8 +45,11 @@ $result = mysqli_query($conn,$sql);
 
 <div class="card">
 
+
 <div class="img-box">
-<img src="../images/<?php echo $row['image']; ?>">
+        <a href="<?= BASE_URL ?>pages/product_detail.php?id=<?= $row['id'] ?>">
+                 <img src="images/<?php echo $row['image']; ?>">
+                    </a>
 </div>
 
 <h3><?php echo $row['name']; ?></h3>
