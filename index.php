@@ -59,8 +59,9 @@ $result = mysqli_query($conn, $sql);
                 </div>
 
                 <h3><?php echo $row['name']; ?></h3>
+                <p>vnd<?php echo $row['price']; ?></p>
+                <p><?php echo $row['description']; ?></p>
 
-                <p>$<?php echo $row['price']; ?></p>
 
                 <button onclick="addCart(<?php echo $row['id']; ?>)">thêm vào giỏ hàng</button>
 
@@ -71,5 +72,6 @@ $result = mysqli_query($conn, $sql);
     </div>
 
 </section>
+
 
 <?php include("includes/footer.php"); ?>

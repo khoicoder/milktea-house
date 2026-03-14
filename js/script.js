@@ -24,6 +24,7 @@ function toggleUserMenu() {
     menu.style.display = "block";
   }
 }
+
 function updateCartCount(count) {
   console.log("update cart:", count);
   document.getElementById("cart-count").innerText = count;

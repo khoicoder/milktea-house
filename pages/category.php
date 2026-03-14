@@ -1,9 +1,6 @@
 <?php include("../includes/header.php"); ?>
 <?php
 
-
-
-
 $category_id = $_GET['id'] ?? 0;
 $search = $_GET['search'] ?? '';
 $min = $_GET['min'] ?? 0;
@@ -67,3 +64,21 @@ $result = mysqli_query($conn,$sql);
 </section>
 
 <?php include("../includes/footer.php"); ?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+`       `       ``
