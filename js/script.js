@@ -1,4 +1,12 @@
+// thêm sản phẩm vào giỏ hàng
 function addCart(id) {
+  // kiểm tra đăng nhập
+  if (!isLoggedIn) {
+    alert("Bạn cần đăng nhập để thêm sản phẩm");
+    window.location.href = "pages/login.php";
+    return;
+  }
+
   fetch("/milktea-house/ajax/add_cart.php", {
     method: "POST",
     headers: {
@@ -9,15 +17,22 @@ function addCart(id) {
     .then((res) => res.json())
     .then((data) => {
       console.log(data);
+
       showToast(data.message);
 
       if (data.status === "success") {
         updateCartCount(data.cart_count);
       }
+    })
+    .catch((error) => {
+      console.error("Lỗi:", error);
     });
 }
+
+// toggle menu user
 function toggleUserMenu() {
   let menu = document.getElementById("userDropdown");
+
   if (menu.style.display === "block") {
     menu.style.display = "none";
   } else {
@@ -25,11 +40,18 @@ function toggleUserMenu() {
   }
 }
 
+// cập nhật số lượng giỏ hàng
 function updateCartCount(count) {
   console.log("update cart:", count);
-  document.getElementById("cart-count").innerText = count;
+
+  let cart = document.getElementById("cart-count");
+
+  if (cart) {
+    cart.innerText = count;
+  }
 }
 
+// toast thông báo
 function showToast(message) {
   const toast = document.getElementById("toast");
 
@@ -41,26 +63,34 @@ function showToast(message) {
   }, 2000);
 }
 
+// click ngoài dropdown thì đóng menu
 document.addEventListener("click", function (e) {
   const dropdown = document.getElementById("userDropdown");
   const avatar = document.querySelector(".avatar");
+
   if (!dropdown) return;
+
   if (avatar && avatar.contains(e.target)) return;
+
   if (dropdown.contains(e.target)) return;
+
   dropdown.style.display = "none";
 });
-// nhắc lỗi form đăng kí
+
+// validate form đăng ký
 function validateForm() {
   let username = document.getElementById("username").value;
   let email = document.getElementById("email").value;
   let password = document.getElementById("password").value;
   let confirm = document.getElementById("confirm_password").value;
+
   let valid = true;
-  // reset lỗi
+
   document.getElementById("usernameError").innerText = "";
   document.getElementById("emailError").innerText = "";
   document.getElementById("passwordError").innerText = "";
   document.getElementById("confirmError").innerText = "";
+
   if (username === "") {
     document.getElementById("usernameError").innerText = "Vui lòng nhập tên";
     valid = false;
@@ -69,31 +99,37 @@ function validateForm() {
       "Username phải ít nhất 3 ký tự";
     valid = false;
   }
+
   if (email === "") {
     document.getElementById("emailError").innerText = "Vui lòng nhập email";
     valid = false;
   }
+
   if (password === "") {
     document.getElementById("passwordError").innerText =
       "Vui lòng nhập mật khẩu";
     valid = false;
   }
+
   if (confirm === "") {
     document.getElementById("confirmError").innerText =
       "Vui lòng nhập lại mật khẩu";
     valid = false;
   }
+
   if (password !== confirm && confirm !== "") {
     document.getElementById("confirmError").innerText = "Mật khẩu không khớp";
     valid = false;
   }
-  //nhắc pass yếu
+
   if (document.getElementById("passwordError").innerText !== "") {
     valid = false;
   }
+
   return valid;
 }
-//check mật khẩu đủ điều kiện không
+
+// kiểm tra mật khẩu mạnh
 document.getElementById("password").addEventListener("keyup", function () {
   let password = this.value;
   let error = "";

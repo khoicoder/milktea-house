@@ -62,7 +62,7 @@ $result = mysqli_query($conn, $sql);
                 </div>
 
                 <h3><?php echo $row['name']; ?></h3>
-                <p>vnd<?php echo $row['price']; ?></p>
+                <p><?= number_format($row['price']) ?> VNĐ</p>
                 <p><?php echo $row['description']; ?></p>
 
 
