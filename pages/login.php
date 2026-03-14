@@ -1,39 +1,37 @@
 <?php
 include("../config/config.php");
+global $conn;
+if (isset($_POST['login'])) {
 
-if(isset($_POST['login'])){
+    $email = $_POST['email'];
+    $password = $_POST['password'];
 
-$email = $_POST['email'];
-$password = $_POST['password'];
+    $sql = "SELECT * FROM users WHERE email='$email'";
+    $result = mysqli_query($conn, $sql);
 
-$sql = "SELECT * FROM users WHERE email='$email'";
-$result = mysqli_query($conn,$sql);
-        
-$user = mysqli_fetch_assoc($result);
+    $user = mysqli_fetch_assoc($result);
 
-if($user && password_verify($password,$user['password'])){
+    if ($user && password_verify($password, $user['password'])) {
 
-$_SESSION['user_id'] = $user['id'];
-$_SESSION['username'] = $user['username'];
-$_SESSION['role'] = $user['role'];
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['role'] = $user['role'];
 
-header("Location: ../index.php");
+        header("Location: ../index.php");
+    } else {
 
-}else{
-
-echo "Sai email hoặc mật khẩu";
-
-}
-
+        echo "Sai email hoặc mật khẩu";
+    }
 }
 ?>
 
 <form method="POST">
 
-<input type="email" name="email" placeholder="Email">
+    <input type="email" name="email" placeholder="Email">
 
-<input type="password" name="password" placeholder="Password">
+    <input type="password" name="password" placeholder="Password">
 
-<button name="login">Đăng nhập</button>
+    <button name="login">Đăng nhập</button>
+
 
 </form>
