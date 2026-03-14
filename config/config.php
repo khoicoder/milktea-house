@@ -5,11 +5,9 @@ $user = "root";
 $password = "";
 $dbname = "milktea_house";
 
-define("BASE_URL","/milktea-house/");
-$conn = mysqli_connect($host,$user,$password,$dbname);
+define("BASE_URL", "/milktea-house/");
+$conn = mysqli_connect($host, $user, $password, $dbname);
 
-if(!$conn){
+if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
-
-?>
