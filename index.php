@@ -53,14 +53,18 @@ $result = mysqli_query($conn, $sql);
         <?php while ($row = mysqli_fetch_assoc($result)) { ?>
 
             <div class="card">
+                
 
                 <div class="img-box">
-                    <img src="images/<?php echo $row['image']; ?>">
+                    <a href="<?= BASE_URL ?>pages/product_detail.php?id=<?= $row['id'] ?>">
+                        <img src="images/<?php echo $row['image']; ?>">
+                    </a>
                 </div>
 
                 <h3><?php echo $row['name']; ?></h3>
+                <p><?= number_format($row['price']) ?> VNĐ</p>
+                <p><?php echo $row['description']; ?></p>
 
-                <p>$<?php echo $row['price']; ?></p>
 
                 <button onclick="addCart(<?php echo $row['id']; ?>)">thêm vào giỏ hàng</button>
 
@@ -71,5 +75,6 @@ $result = mysqli_query($conn, $sql);
     </div>
 
 </section>
+
 
 <?php include("includes/footer.php"); ?>

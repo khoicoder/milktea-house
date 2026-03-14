@@ -2,6 +2,11 @@
 
 <?php
 $currentUser = null;
+$cartCount = 0;
+
+if(isset($_SESSION['cart'])){
+    $cartCount = array_sum($_SESSION['cart']);
+}
 
 if(isset($_SESSION['user_id'])){
     $uid = (int)$_SESSION['user_id'];
@@ -37,6 +42,8 @@ $result = mysqli_stmt_get_result($stmt);
 $currentUser = mysqli_fetch_assoc($result);
 
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -66,8 +73,9 @@ $currentUser = mysqli_fetch_assoc($result);
 <a href="<?= BASE_URL ?>pages/category.php?id=3">Đá xay</a>
 <a href="<?= BASE_URL ?>pages/category.php?id=4">Topping</a>
 
-<a href="<?= BASE_URL ?>pages/cart.php">
-Giỏ hàng (<span id="cart-count"><?= $cart_count ?></span>)
+<a href="<?= BASE_URL ?>pages/cart.php" onclick="return checkLogin()">
+    Giỏ hàng
+        (<span id="cart-count"><?= $cartCount ?></span>)
 </a>
 
 </nav>
@@ -117,3 +125,22 @@ Xin chào, <?= htmlspecialchars($currentUser['display_name'] ?: $currentUser['us
 </div>
 
 </header>
+<script>
+
+let isLoggedIn = <?= isset($_SESSION['user_id']) ? 'true' : 'false' ?>;
+
+function checkLogin() {
+
+  if (!isLoggedIn) {
+
+    alert("Vui lòng đăng nhập để xem giỏ hàng");
+
+    window.location.href = "<?= BASE_URL ?>pages/login.php";
+
+    return false;
+  }
+
+  return true;
+}
+
+</script>

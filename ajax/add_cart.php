@@ -11,6 +11,19 @@ $sql = "SELECT * FROM products WHERE id=$id";
 $result = mysqli_query($conn,$sql);
 $product = mysqli_fetch_assoc($result);
 
+if(!isset($_SESSION['user_id'])){
+    echo json_encode([
+        "status"=>"error",
+        "message"=>"Vui lòng đăng nhập để thêm vào giỏ hàng",
+        
+    ]);
+    header("Location: " . BASE_URL . "pages/login.php");
+    
+    exit;
+}
+
+
+
 if(!$product){
     echo json_encode([
         "status"=>"error",
@@ -52,3 +65,18 @@ echo json_encode([
     "message"=>"Đã thêm vào giỏ hàng",
     "cart_count"=>$count
 ]);
+session_start();
+
+$id = $_POST['id'];
+
+if(!isset($_SESSION['cart'])){
+    $_SESSION['cart'] = [];
+}
+
+if(isset($_SESSION['cart'][$id])){
+    $_SESSION['cart'][$id]++;
+}else{
+    $_SESSION['cart'][$id] = 1;
+}
+
+echo array_sum($_SESSION['cart']);
