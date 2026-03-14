@@ -9,6 +9,28 @@ if(isset($_SESSION['cart'])){
 }
 
 if(isset($_SESSION['user_id'])){
+    $uid = (int)$_SESSION['user_id'];
+    $stmt = mysqli_prepare($conn,"SELECT id,username,display_name,avatar,role FROM users WHERE id=?");
+    mysqli_stmt_bind_param($stmt,"i",$uid);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    $currentUser = mysqli_fetch_assoc($result);
+}
+
+// THÊM ĐOẠN NÀY ĐỂ TÍNH TỔNG SỐ LƯỢNG SẢN PHẨM TRONG GIỎ HÀNG
+$cart_count = 0;
+if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
+    $cart_count = array_sum($_SESSION['cart']);
+}
+?>
+
+<?php require_once(__DIR__ . "/../config/config.php"); ?>
+
+<?php
+$currentUser = null;
+
+if(isset($_SESSION['user_id'])){
 
 $uid = (int)$_SESSION['user_id'];
 
