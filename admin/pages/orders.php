@@ -34,7 +34,7 @@ ORDER BY o.id DESC
 <td><span class="badge <?= $o['status'] ?>"><?= $o['status'] ?></span></td>
 <td><?= $o['created_at'] ?></td>
 <td>
-<a href="../delete_order.php?id=<?= $o['id'] ?>" onclick="return confirm('Xóa đơn?')">❌</a>
+<button onclick="deleteOrder(<?= $o['id'] ?>)">❌</button>
 </td>
 </tr>
 <?php } ?>
@@ -42,3 +42,4 @@ ORDER BY o.id DESC
 </table>
 </div>
 </div>
+<script src="../js/admin.js"></script>
