@@ -48,9 +48,11 @@ if (isset($_POST['reset'])) {
         mysqli_query($conn, $sql);
 
         $message = "Đổi mật khẩu thành công";
-
-        // 👉 có thể redirect
-        // header("Location: login.php");
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['role'] = $user['role'];
+        header("Location: ../index.php");
+        exit;
     }
 }
 ?>

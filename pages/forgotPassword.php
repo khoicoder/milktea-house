@@ -30,7 +30,7 @@ if (isset($_POST['forgot'])) {
         WHERE email='$email'";
             $result = mysqli_query($conn, $sql);
             // tạo link
-            $link = "http://localhost/milktea-house/pages/reset_password.php?token=$token";;
+            $link = "http://localhost/milktea-house/pages/reset_password.php?token=$token";
             $mail = new PHPMailer(true);
 
             try {
