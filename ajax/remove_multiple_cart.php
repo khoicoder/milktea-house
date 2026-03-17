@@ -27,3 +27,4 @@ echo json_encode([
     "message" => "Đã xóa các sản phẩm được chọn",
     "cart_count" => $count
 ]);
+

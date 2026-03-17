@@ -1,8 +1,7 @@
 /* ==============================
-   GLOBAL VARIABLES
 ============================== */
 // script.js (dùng biến global được set bởi PHP)
-const BASE = (window.BASE_URL) ? window.BASE_URL : "/milktea-house/";
+const BASE = window.BASE_URL ? window.BASE_URL : "/milktea-house/";
 // NOTE: dùng BASE thay vì BASE_URL để tránh tên trùng
 
 /* ==============================
@@ -23,7 +22,7 @@ function addCart(id) {
     },
     body: "id=" + id,
   })
-  .then((res) => res.text()) // lấy text trước để debug nếu JSON sai
+    .then((res) => res.text()) // lấy text trước để debug nếu JSON sai
     .then((text) => {
       // debug: nếu JSON lỗi, log toàn bộ text để kiểm tra
       try {
@@ -31,7 +30,10 @@ function addCart(id) {
         console.log("Add cart response:", data);
 
         if (data.message) showToast(data.message);
-        if (data.status === "success" && typeof data.cart_count !== "undefined") {
+        if (
+          data.status === "success" &&
+          typeof data.cart_count !== "undefined"
+        ) {
           updateCartCount(data.cart_count);
         }
       } catch (err) {
@@ -45,7 +47,6 @@ function addCart(id) {
       showToast("Có lỗi mạng. Vui lòng thử lại.");
     });
 }
-
 
 /* ==============================
    UPDATE CART COUNT

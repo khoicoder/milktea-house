@@ -156,24 +156,43 @@ function updateQty(id, change) {
 }
 
 // Xóa sản phẩm
-function removeItem(id) {
+async function removeItem(id) {
+  try {
+
     if (!confirm("Bạn có chắc chắn muốn bỏ sản phẩm này?")) return;
 
-    fetch(BASE_URL + "ajax/remove_cart.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `id=${id}`
-    })
-    .then(res => res.json())
-    .then(data => {
-        if(data.status === 'success') {
-            document.getElementById('item-row-' + id).remove();
-            if(typeof updateCartCount === 'function') updateCartCount(data.cart_count);
-            calculateTotal();
-            
-            if (data.cart_count === 0) location.reload();
-        }
+    const res = await fetch(BASE_URL + "ajax/remove_cart.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `id=${id}`
     });
+
+    if (!res.ok) {
+      throw new Error("Server response error");
+    }
+
+    const data = await res.json();
+
+    if (data.status === "success") {
+
+      const row = document.getElementById("item-row-" + id);
+      if (row) row.remove();
+
+      if (typeof updateCartCount === "function") {
+        updateCartCount(data.cart_count);
+      }
+
+      calculateTotal();
+
+      if (data.cart_count === 0) {
+        location.reload();
+      }
+    }
+
+  } catch (error) {
+    console.error("Lỗi kết nối:", error);
+    alert("Có lỗi xảy ra, vui lòng thử lại.");
+  }
 }
 
 // Cập nhật hàm chọn tất cả
