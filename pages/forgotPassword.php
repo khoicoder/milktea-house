@@ -24,13 +24,13 @@ if (isset($_POST['forgot'])) {
         //nếu tồn tại thì tạo token
         if ($users) {
             $token = bin2hex(random_bytes(32));
-            $expire = date("Y-m-d H:i:s", strtotime("+5 minutes"));
+            $expire = date("Y-m-d H:i:s", time() + 3600);
             $sql = "UPDATE users
         SET reset_token = '$token', reset_token_expire ='$expire'
         WHERE email='$email'";
             $result = mysqli_query($conn, $sql);
             // tạo link
-            $link = "http://localhost/reset_password.php?token=$token";
+            $link = "http://localhost/milktea-house/pages/reset_password.php?token=$token";;
             $mail = new PHPMailer(true);
 
             try {
@@ -45,7 +45,7 @@ if (isset($_POST['forgot'])) {
                 $mail->Port = 587;
 
                 // người gửi
-                $mail->setFrom('@gmail.com', 'Milk Tea House');
+                $mail->setFrom('nguyenhuynhkha0203@gmail.com', 'Milk Tea House');
 
                 // người nhận
                 $mail->addAddress($email);
