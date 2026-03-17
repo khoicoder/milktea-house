@@ -75,7 +75,7 @@ SELECT * FROM orders ORDER BY created_at DESC LIMIT 5
 
 <div class="card">
 <h3>Revenue</h3>
-<p>$<?= $revenue ?></p>
+<p><?= number_format($revenue, 2) ?> VND</p>
 </div>
 
 </div>
@@ -90,7 +90,7 @@ SELECT * FROM orders ORDER BY created_at DESC LIMIT 5
 
 <!-- TOP PRODUCTS -->
 <div class="box">
-<h2>🔥 Top sản phẩm</h2>
+<h2>Top sản phẩm</h2>
 
 <table>
 <tr><th>Tên</th><th>Đã bán</th></tr>
@@ -128,7 +128,7 @@ SELECT * FROM orders ORDER BY created_at DESC LIMIT 5
 
 <!-- ORDERS -->
 <div class="box">
-<h2>📦 Đơn hàng gần đây</h2>
+<h2>Đơn hàng gần đây</h2>
 
 <table>
 <tr>
@@ -141,7 +141,7 @@ SELECT * FROM orders ORDER BY created_at DESC LIMIT 5
 <?php while($o = mysqli_fetch_assoc($orders)){ ?>
 <tr>
 <td>#<?= $o['id'] ?></td>
-<td>$<?= $o['total'] ?></td>
+<td><?= number_format($o['total'], 2) ?> VND</td>
 <td><?= $o['status'] ?></td>
 <td><?= $o['created_at'] ?></td>
 </tr>
