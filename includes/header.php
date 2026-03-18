@@ -1,4 +1,5 @@
-<?php require_once(__DIR__ . "/../config/config.php"); ?>
+<?php require_once(__DIR__ . "/../config/config.php");?>
+
 
 <?php
 $currentUser = null;
@@ -18,7 +19,7 @@ if(isset($_SESSION['user_id'])){
     $currentUser = mysqli_fetch_assoc($result);
 }
 
-// THÊM ĐOẠN NÀY ĐỂ TÍNH TỔNG SỐ LƯỢNG SẢN PHẨM TRONG GIỎ HÀNG
+// TÍNH TỔNG SỐ LƯỢNG SẢN PHẨM TRONG GIỎ HÀNG
 $cart_count = 0;
 if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
     $cart_count = array_sum($_SESSION['cart']);
@@ -133,7 +134,8 @@ Xin chào, <?= htmlspecialchars($currentUser['display_name'] ?: $currentUser['us
 </header>
 <script>
  window.BASE_URL = "<?php echo rtrim(BASE_URL, '/'); ?>/";
- window.isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
+ window.isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; 
+ ?>;
 
 function checkLogin() {
 
