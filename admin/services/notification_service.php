@@ -3,19 +3,6 @@ require_once(__DIR__ . "/../../config/config.php");
 require_once(__DIR__ . "/../auth_admin.php");
 
 
-//text
-// --- TỰ ĐỘNG TẠO BẢNG NẾU CHƯA CÓ ---
-$create_table_sql = "CREATE TABLE IF NOT EXISTS notifications (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT DEFAULT 0,
-    title VARCHAR(255) NOT NULL,
-    message TEXT NOT NULL,
-    link VARCHAR(255) DEFAULT NULL,
-    is_read TINYINT(1) DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
-mysqli_query($conn, $create_table_sql);
-// ------------------------------------
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = intval($_POST['user_id'] ?? 0); 
