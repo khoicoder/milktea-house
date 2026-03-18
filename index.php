@@ -1,25 +1,22 @@
 <?php
-// index.php - Product listing (uses product.css)
 require_once(__DIR__ . "/config/config.php");
-
-// page-specific css for header include
 $page_css = "product.css";
 include(__DIR__ . "/includes/header.php");
 
-// Read & sanitize filter input
+
 $category_id = intval($_GET['id'] ?? 0);
 $search = $_GET['search'] ?? '';
 $min = isset($_GET['min']) && $_GET['min'] !== '' ? intval($_GET['min']) : 0;
 $max = isset($_GET['max']) && $_GET['max'] !== '' ? intval($_GET['max']) : 1000000;
 
-// Ensure min <= max
+
 if ($min > $max) {
     $tmp = $min; $min = $max; $max = $tmp;
 }
 
 $search_esc = mysqli_real_escape_string($conn, $search);
 
-// Build SQL safely (simple approach)
+
 $sql = "SELECT id, name, price, image, description FROM products WHERE price BETWEEN {$min} AND {$max}";
 
 if ($category_id > 0) {
@@ -88,7 +85,7 @@ $result = mysqli_query($conn, $sql);
                 </div>
 
                 <div class="rating u-muted" aria-hidden="true">
-                  <!-- optional stars / reviews -->
+                  
                 </div>
               </div>
           
@@ -114,5 +111,6 @@ $result = mysqli_query($conn, $sql);
 
   </div>
 </section>
-
+ 
 <?php include(__DIR__ . "/includes/footer.php"); ?>
+
