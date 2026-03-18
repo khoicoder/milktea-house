@@ -104,7 +104,7 @@ include("../includes/header.php");
                         Tổng thanh toán (<span id="total-items">0</span> Sản phẩm): 
                         <span class="total-price" id="total-price-display">0đ</span>
                     </div>
-                    <button class="btn-checkout" onclick="checkout()">Đặt hàng ngay →</button>
+                    <button class="btn-checkout" onclick="checkout()">Đặt hàng ngay</button>
                 </div>
             </div>
         <?php endif; ?>
