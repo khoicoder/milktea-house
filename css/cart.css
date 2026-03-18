@@ -27,7 +27,7 @@
 }
 
 .cart-page .cart-title span.cart-count-badge {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   background: #ff5a5f;
   color: #fff;
@@ -48,7 +48,7 @@
   padding: 14px 20px;
   margin-bottom: 10px;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 15px;
   color: #999;
   letter-spacing: 0.3px;
   text-transform: uppercase;
@@ -92,7 +92,7 @@
 .cart-page .col-price {
   width: 15%;
   text-align: center;
-  font-size: 14px;
+  font-size: 16px;
   color: #555;
 }
 
@@ -106,7 +106,7 @@
   text-align: center;
   color: #ff5a5f;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 17px;
 }
 
 .cart-page .col-action {
@@ -147,7 +147,7 @@
 
 .cart-page .product-name {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 16px;
   color: #2d2d2d;
   text-decoration: none;
   line-height: 1.4;
@@ -202,7 +202,7 @@
   border: none;
   background: transparent;
   text-align: center;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: #2d2d2d;
   outline: none;
@@ -221,7 +221,7 @@
   border-radius: 8px;
   cursor: pointer;
   color: #aaa;
-  font-size: 13px;
+  font-size: 15px;
   padding: 5px 12px;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
@@ -256,7 +256,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #555;
 }
@@ -279,7 +279,7 @@
   border: 1.5px solid #eee;
   border-radius: 8px;
   padding: 9px 12px;
-  font-size: 13.5px;
+  font-size: 15px;
   font-family: "Inter", "Segoe UI", sans-serif;
   color: #444;
   resize: none;
@@ -329,7 +329,7 @@
 }
 
 .cart-page .footer-left label {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   color: #444;
   cursor: pointer;
@@ -358,7 +358,7 @@
   padding: 9px 14px;
   border: 1.5px solid #e8e8e8;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 15px;
   font-family: "Inter", "Segoe UI", sans-serif;
   color: #444;
   outline: none;
@@ -382,7 +382,7 @@
   color: #fff;
   padding: 9px 18px;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.15s, transform 0.15s;
@@ -399,7 +399,7 @@
 ============================================== */
 
 .cart-page .total-text {
-  font-size: 14px;
+  font-size: 16px;
   color: #555;
   white-space: nowrap;
 }
@@ -421,7 +421,7 @@
   border-radius: 8px;
   cursor: pointer;
   color: #aaa;
-  font-size: 13px;
+  font-size: 15px;
   padding: 6px 14px;
   font-weight: 500;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
@@ -443,7 +443,7 @@
   border: none;
   padding: 12px 34px;
   border-radius: 12px;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
   cursor: pointer;
   letter-spacing: 0.3px;
@@ -477,7 +477,7 @@
 }
 
 .cart-page .empty-cart p {
-  font-size: 18px;
+  font-size: 20px;
   color: #888;
   margin-bottom: 24px;
   font-weight: 500;
@@ -491,7 +491,7 @@
   border-radius: 12px;
   text-decoration: none;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 17px;
   letter-spacing: 0.5px;
   box-shadow: 0 4px 14px rgba(255, 90, 95, 0.35);
   transition: opacity 0.18s, transform 0.18s, box-shadow 0.18s;

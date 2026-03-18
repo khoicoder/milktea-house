@@ -11,7 +11,7 @@
 }
 
 .logo {
-  font-size: 22px;
+  font-size: 26px; /* Tăng từ 22px lên 26px */
   font-weight: 700;
   text-decoration: none;
   color: white;
@@ -19,17 +19,19 @@
 
 .menu {
   display: flex;
-  gap: 20px;
+  gap: 25px; /* Tăng khoảng cách giữa các menu */
 }
 
 .menu a {
   color: white;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600; /* Tăng độ đậm */
+  font-size: 17px; /* Thêm kích thước chữ 17px */
 }
 
 .menu a:hover {
-  opacity: 0.8;
+  opacity: 0.9;
+  text-decoration: underline;
 }
 
 .avatar {
@@ -60,185 +62,228 @@
   box-sizing: border-box;
 }
 
-/* user menu */
-.user-menu {
-  position: relative; /* tạo context cho dropdown absolute */
-  display: inline-block;
-}
-
-/* dropdown mặc định ẩn, không chiếm chỗ */
-.user-dropdown {
-  position: absolute;
-  top: calc(100% + 8px); /* nằm dưới avatar */
-  right: 0;
-  min-width: 200px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-  padding: 12px;
-  box-sizing: border-box;
-  visibility: hidden;
-  opacity: 0;
-  transform: translateY(-6px);
-  transition:
-    opacity 180ms ease,
-    transform 180ms ease,
-    visibility 180ms;
-  pointer-events: none; /* tránh click khi ẩn */
-  z-index: 1000;
-}
-
-/* khi mở thì hiển thị bằng opacity (không reflow) */
-.user-menu.open .user-dropdown {
-  visibility: visible;
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-/* style trong dropdown */
-.user-dropdown a {
-  display: block;
-  color: #333;
-  padding: 8px 6px;
-  text-decoration: none;
-  border-radius: 6px;
-}
-.user-dropdown a:hover {
-  background: #f6f6f6;
-}
-
-/* avatar pointer & prevent layout shift on focus */
-.avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  cursor: pointer;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  display: inline-block;
-}
-
-/* tránh outline làm layout nhảy — dùng box-shadow khi focus */
-.avatar:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(255, 90, 95, 0.12);
-  border-radius: 50%;
-}
-
-/* các liên kết menu không thay đổi kích thước khi focus */
-.menu a {
-  outline: none;
-}
-.menu a:focus {
-  box-shadow: 0 6px 18px rgba(255, 90, 95, 0.08);
-  border-radius: 6px;
-}
-
-/* đảm bảo header-right không thay đổi kích thước */
+/* Đảm bảo các phần tử trong header-right nằm ngang hàng */
 .header-right {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-.user-menu {
-  position: relative;
+  gap: 20px; /* Khoảng cách giữa chuông và avatar */
 }
 
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.avatar:hover {
+  transform: scale(1.05);
+  border-color: #fff;
+}
+
+/* user menu wrapper */
+.user-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* dropdown chuẩn - Dùng display để tránh xung đột */
 .user-dropdown {
   position: absolute;
-  top: 100%;
+  top: 50px;
   right: 0;
+  min-width: 200px;
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   padding: 10px;
-  opacity: 0;
-  transform: translateY(-10px);
-  pointer-events: none;
-  transition: 0.2s;
+  box-sizing: border-box;
+  display: none; 
+  z-index: 1100;
+  border: 1px solid #eee;
 }
 
-.user-menu.open .user-dropdown {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-.user-menu {
-  position: relative;
-}
-
-.user-dropdown {
-  position: absolute;
-  top: 45px;
-  right: 0;
-
-  background: white;
-  min-width: 160px;
-
-  border-radius: 8px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-
-  padding: 10px;
-
-  display: none;
-  z-index: 999;
-}
-
-/* khi mở */
-
+/* Hiển thị khi có class open */
 .user-menu.open .user-dropdown {
   display: block;
 }
 
 .user-dropdown a {
   display: block;
-  padding: 8px;
   color: #333;
+  padding: 10px 15px;
   text-decoration: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
 }
 
 .user-dropdown a:hover {
-  background: #f5f5f5;
+  background: #fff5f5;
+  color: #ff5a5f;
 }
 
 .user-name {
-  font-weight: 600;
-  padding: 6px;
+  font-weight: 700;
+  padding: 10px 15px;
   border-bottom: 1px solid #eee;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
+  color: #ff5a5f;
+  font-size: 14px;
 }
+
 
 /* ==============================================
    Notification Bell
 ============================================== */
 
-.notif-bell {
-  position: relative;
-  font-size: 20px;
-  line-height: 1;
-  cursor: default;
-  flex-shrink: 0;
-  user-select: none;
+/* Container chuông */
+.noti-wrapper {
+    position: relative;
+    margin-right: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
 }
 
-/* Badge số thông báo chưa đọc */
-.notif-badge {
-  position: absolute;
-  top: -6px;
-  right: -8px;
-  min-width: 16px;
-  height: 16px;
-  background: #fff;
-  color: #ff5a5f;
-  font-size: 10px;
-  font-weight: 700;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 4px;
-  line-height: 1;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+.noti-bell {
+    position: relative;
+    padding: 5px;
+    color: #fff;
+    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.noti-bell:hover {
+    transform: scale(1.1);
+}
+
+/* Badge số lượng */
+.noti-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background-color: #fff;
+    color: #ff5a5f;
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 50%;
+    font-weight: bold;
+    border: 1px solid #ff5a5f;
+    line-height: 1;
+}
+
+/* Dropdown Menu */
+.noti-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 320px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    display: none; /* Ẩn mặc định */
+    z-index: 1001;
+    overflow: hidden;
+    animation: slideDownNoti 0.3s ease;
+}
+
+@keyframes slideDownNoti {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.noti-dropdown.active {
+    display: block;
+}
+
+/* Header & Footer của dropdown */
+.noti-header {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+}
+
+.noti-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.noti-close {
+    font-size: 20px;
+    color: #999;
+    cursor: pointer;
+}
+
+.noti-footer {
+    padding: 10px;
+    text-align: center;
+    border-top: 1px solid #eee;
+    background: #fdfdfd;
+}
+
+.noti-footer a {
+    color: #ff5a5f;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Danh sách thông báo */
+.noti-list {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.noti-item {
+    display: block;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #333;
+    border-bottom: 1px solid #f9f9f9;
+    transition: background 0.2s;
+}
+
+.noti-item:hover {
+    background: #fff5f5;
+}
+
+.noti-item.unread {
+    background: #fffafb;
+    border-left: 3px solid #ff5a5f;
+}
+
+.noti-title {
+    font-weight: 600;
+    margin: 0 0 3px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.noti-msg {
+    margin: 0 0 5px 0;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+}
+
+.noti-time {
+    color: #999;
+    font-size: 11px;
+}
+
+.noti-empty {
+    padding: 30px;
+    text-align: center;
+    color: #999;
 }

@@ -70,18 +70,48 @@ function toggleUserMenu() {
   if (!userMenu) return;
 
   userMenu.classList.toggle("open");
+
+  // Close notification menu if open
+  const notiDropdown = document.getElementById("notiDropdown");
+  if (notiDropdown) notiDropdown.classList.remove("active");
+}
+
+/* ==============================
+   NOTIFICATION MENU
+============================== */
+
+function toggleNotiMenu() {
+  const notiDropdown = document.getElementById("notiDropdown");
+  if (!notiDropdown) return;
+
+  notiDropdown.classList.toggle("active");
+
+  // Close user menu if open
+  const userMenu = document.querySelector(".user-menu");
+  if (userMenu) userMenu.classList.remove("open");
 }
 
 /* close dropdown when click outside */
 
 document.addEventListener("click", function (e) {
   const userMenu = document.querySelector(".user-menu");
+  const notiWrapper = document.querySelector(".noti-wrapper");
+  const notiDropdown = document.getElementById("notiDropdown");
 
-  if (!userMenu) return;
+  // Handle User Menu
+  if (userMenu && !userMenu.contains(e.target)) {
+    userMenu.classList.remove("open");
+  } else if (userMenu && userMenu.contains(e.target) && e.target.tagName === 'A') {
+    // Nếu click vào link bên trong menu thì cứ để nó chuyển trang bình thường
+    userMenu.classList.remove("open");
+  }
 
-  if (userMenu.contains(e.target)) return;
-
-  userMenu.classList.remove("open");
+  // Handle Notification Menu
+  if (notiWrapper && !notiWrapper.contains(e.target)) {
+    if (notiDropdown && notiDropdown.classList.contains("active")) {
+      notiDropdown.classList.remove("active");
+    }
+  }
 });
 
 /* ==============================
