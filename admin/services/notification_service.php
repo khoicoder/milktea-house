@@ -2,6 +2,8 @@
 require_once(__DIR__ . "/../../config/config.php");
 require_once(__DIR__ . "/../auth_admin.php");
 
+
+//text
 // --- TỰ ĐỘNG TẠO BẢNG NẾU CHƯA CÓ ---
 $create_table_sql = "CREATE TABLE IF NOT EXISTS notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
