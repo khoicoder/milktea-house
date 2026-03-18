@@ -39,11 +39,29 @@ mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $currentUser = mysqli_fetch_assoc($result);
 
+// Fetch notifications
+$notifications = [];
+$unreadCount = 0;
+if ($currentUser) {
+    $uid = (int)$currentUser['id'];
+    $sql_noti = "SELECT * FROM notifications 
+                 WHERE user_id = ? OR user_id = 0 
+                 ORDER BY created_at DESC LIMIT 10";
+    $stmt_noti = mysqli_prepare($conn, $sql_noti);
+
+    if ($stmt_noti) {
+        mysqli_stmt_bind_param($stmt_noti, "i", $uid);
+        mysqli_stmt_execute($stmt_noti);
+        $res_noti = mysqli_stmt_get_result($stmt_noti);
+
+        while ($row = mysqli_fetch_assoc($res_noti)) {
+            $notifications[] = $row;
+            if ($row['is_read'] == 0) $unreadCount++;
+        }
+    }
 }
-
-
+}
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -80,8 +98,8 @@ echo '<link rel="stylesheet" href="'.BASE_URL.'css/' . $page_css . '">';
 <a href="<?= BASE_URL ?>pages/category.php?id=4">Topping</a>
 
 <a href="<?= BASE_URL ?>pages/cart.php" onclick="return checkLogin()">
-    Giỏ hàng
-        (<span id="cart-count"><?= $cartCount ?></span>)
+Giỏ hàng
+    (<span id="cart-count"><?= $cartCount ?></span>)
 </a>
 
 </nav>
@@ -99,8 +117,46 @@ echo '<link rel="stylesheet" href="'.BASE_URL.'css/' . $page_css . '">';
 
 <!-- Logged user -->
 
-<div class="user-menu">
+<!-- Notification Bell -->
+<div class="noti-wrapper">
+<div class="noti-bell" onclick="toggleNotiMenu()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+    </svg>
+    <?php if ($unreadCount > 0): ?>
+        <span class="noti-badge"><?= $unreadCount ?></span>
+    <?php endif; ?>
+</div>
 
+<!-- Dropdown Thông báo -->
+<div class="noti-dropdown" id="notiDropdown">
+    <div class="noti-header">
+        <h3>Thông báo</h3>
+        <span class="noti-close" onclick="toggleNotiMenu()">&times;</span>
+    </div>
+    <div class="noti-list">
+        <?php if (empty($notifications)): ?>
+            <div class="noti-empty">Không có thông báo nào</div>
+        <?php else: ?>
+            <?php foreach ($notifications as $noti): ?>
+                <a href="<?= BASE_URL . ($noti['link'] ?? '#') ?>" class="noti-item <?= $noti['is_read'] == 0 ? 'unread' : '' ?>">
+                    <div class="noti-content">
+                        <p class="noti-title"><?= htmlspecialchars($noti['title']) ?></p>
+                        <p class="noti-msg"><?= htmlspecialchars($noti['message']) ?></p>
+                        <small class="noti-time"><?= date('H:i d/m/Y', strtotime($noti['created_at'])) ?></small>
+                    </div>
+                </a>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
+    <div class="noti-footer">
+        <a href="#">Xem tất cả</a>
+    </div>
+</div>
+</div>
+
+<div class="user-menu">
 <img
 src="<?= $currentUser['avatar'] ? BASE_URL.'uploads/'.$currentUser['avatar'] : BASE_URL.'images/user.jpg' ?>"
 class="avatar"

@@ -80,6 +80,18 @@ class databases {
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )");
 
+        // NOTIFICATIONS
+        $conn->query("
+        CREATE TABLE IF NOT EXISTS notifications (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT DEFAULT 0,
+            title VARCHAR(255) NOT NULL,
+            message TEXT NOT NULL,
+            link VARCHAR(255) DEFAULT NULL,
+            is_read TINYINT(1) DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )");
+
         // ADD FOREIGN KEY
         $conn->query("ALTER TABLE orders 
             ADD CONSTRAINT fk_orders_user 
@@ -92,6 +104,10 @@ class databases {
         $conn->query("ALTER TABLE order_items 
             ADD CONSTRAINT fk_items_product 
             FOREIGN KEY (product_id) REFERENCES products(id)");
+
+        $conn->query("ALTER TABLE notifications 
+            ADD CONSTRAINT fk_notifications_user 
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE");
 
         // Bật lại FK
         $conn->query("SET FOREIGN_KEY_CHECKS=1");
@@ -106,9 +122,16 @@ class databases {
             // USERS
             $conn->query("
             INSERT INTO users(username,email,password,role) VALUES
-            ('admin','admin@gmail.com','123','admin'),
+            ('admin','admin@gmail.com','B123123@','admin'),
             ('khoi','khoi@gmail.com','123','user'),
             ('an','an@gmail.com','123','user')
+            ");
+
+            // NOTIFICATIONS
+            $conn->query("
+            INSERT INTO notifications (user_id, title, message, link) VALUES 
+            (0, 'Chào mừng!', 'Chào mừng bạn đến với Milktea House. Chúc bạn một ngày ngọt ngào!', 'index.php'),
+            (2, 'Đơn hàng thành công', 'Đơn hàng #1 của bạn đã được xác nhận.', 'pages/orders.php')
             ");
 
             // CATEGORIES
