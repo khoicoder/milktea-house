@@ -7,10 +7,10 @@ async function updateQty(id, change) {
 
     let qtyInput = document.getElementById('qty-' + id);
     let currentQty = parseInt(qtyInput.value);
-    let maxStock = parseInt(qtyInput.getAttribute('data-stock')) || 999; 
+    let maxStock = parseInt(qtyInput.getAttribute('data-stock')) || 999;
     let newQty = currentQty + change;
 
-    if (newQty < 1) return; 
+    if (newQty < 1) return;
 
     // Kiểm tra hàng trong kho
     if (newQty > maxStock) {
@@ -32,12 +32,12 @@ async function updateQty(id, change) {
 
         if (data.status === 'success') {
             qtyInput.value = newQty;
-            
+
             let price = parseFloat(document.getElementById('price-' + id).getAttribute('data-price'));
             let subtotal = price * newQty;
             document.getElementById('subtotal-' + id).innerText = subtotal.toLocaleString('vi-VN') + 'đ';
-            
-            if(typeof updateCartCount === 'function') updateCartCount(data.cart_count);
+
+            if (typeof updateCartCount === 'function') updateCartCount(data.cart_count);
             calculateTotal();
         } else {
             console.error("Lỗi từ server:", data.message);
@@ -82,7 +82,7 @@ async function removeItem(id) {
 // 3. Xóa nhiều sản phẩm đã tick
 async function removeSelectedItems() {
     let checkedItems = document.querySelectorAll('.item-check:checked');
-    
+
     if (checkedItems.length === 0) {
         alert("Vui lòng chọn ít nhất một sản phẩm để xóa.");
         return;
@@ -98,21 +98,21 @@ async function removeSelectedItems() {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             // Đã bọc encodeURIComponent để chống lỗi format JSON khi gửi
-            body: "ids=" + encodeURIComponent(JSON.stringify(idsToDelete)) 
+            body: "ids=" + encodeURIComponent(JSON.stringify(idsToDelete))
         });
 
         if (!res.ok) throw new Error("Server response error");
         const data = await res.json();
 
-        if(data.status === 'success') {
+        if (data.status === 'success') {
             idsToDelete.forEach(id => {
                 let row = document.getElementById('item-row-' + id);
-                if(row) row.remove();
+                if (row) row.remove();
             });
-            
-            if(typeof updateCartCount === 'function') updateCartCount(data.cart_count);
+
+            if (typeof updateCartCount === 'function') updateCartCount(data.cart_count);
             calculateTotal();
-            
+
             if (data.cart_count === 0) location.reload();
         }
     } catch (error) {
@@ -123,16 +123,16 @@ async function removeSelectedItems() {
 // 4. Chọn tất cả
 function toggleCheckAll(source) {
     let isChecked = source.checked;
-    
+
     // An toàn DOM: Kiểm tra element có tồn tại không trước khi đổi thuộc tính
     let checkAllTop = document.getElementById('check-all');
     let checkAllBottom = document.getElementById('check-all-footer');
     if (checkAllTop) checkAllTop.checked = isChecked;
     if (checkAllBottom) checkAllBottom.checked = isChecked;
-    
+
     let checkboxes = document.querySelectorAll('.item-check');
     checkboxes.forEach(cb => cb.checked = isChecked);
-    
+
     calculateTotal();
 }
 
@@ -141,16 +141,16 @@ function calculateTotal() {
     let checkboxes = document.querySelectorAll('.item-check');
     let totalItems = 0;
     let totalPrice = 0;
-    
+
     checkboxes.forEach(cb => {
         if (cb.checked) {
             totalItems++;
             let id = cb.value;
             let qtyInput = document.getElementById('qty-' + id);
             let priceElem = document.getElementById('price-' + id);
-            
+
             // Chỉ tính nếu Element còn tồn tại trên DOM (tránh crash)
-            if(qtyInput && priceElem) {
+            if (qtyInput && priceElem) {
                 let qty = parseInt(qtyInput.value);
                 let price = parseFloat(priceElem.getAttribute('data-price'));
                 totalPrice += (qty * price);
@@ -159,19 +159,19 @@ function calculateTotal() {
     });
 
     let isAllChecked = (checkboxes.length === totalItems) && (checkboxes.length > 0);
-    
+
     let checkAllTop = document.getElementById('check-all');
     let checkAllBottom = document.getElementById('check-all-footer');
-    if(checkAllTop) checkAllTop.checked = isAllChecked;
-    if(checkAllBottom) checkAllBottom.checked = isAllChecked;
+    if (checkAllTop) checkAllTop.checked = isAllChecked;
+    if (checkAllBottom) checkAllBottom.checked = isAllChecked;
 
     let displayTotal = document.getElementById('total-price-display');
     let displayItems = document.getElementById('total-items');
     let displayCountSelected = document.getElementById('total-count-selected');
 
-    if(displayTotal) displayTotal.innerText = totalPrice.toLocaleString('vi-VN') + 'đ';
-    if(displayItems) displayItems.innerText = totalItems;
-    if(displayCountSelected) displayCountSelected.innerText = totalItems;
+    if (displayTotal) displayTotal.innerText = totalPrice.toLocaleString('vi-VN') + 'đ';
+    if (displayItems) displayItems.innerText = totalItems;
+    if (displayCountSelected) displayCountSelected.innerText = totalItems;
 }
 
 // 6. Mã giảm giá
@@ -187,4 +187,15 @@ function checkout() {
         return;
     }
     window.location.href = window.BASE_URL + 'pages/checkout.php';
+}
+
+// 8. Cập nhật bộ đếm ký tự ghi chú
+function updateNoteCounter(textarea) {
+    const count = textarea.value.length;
+    const counter = document.getElementById('note-char-count');
+    const counterWrapper = counter ? counter.closest('.cart-note-counter') : null;
+    if (counter) counter.textContent = count;
+    if (counterWrapper) {
+        counterWrapper.classList.toggle('near-limit', count >= 250);
+    }
 }

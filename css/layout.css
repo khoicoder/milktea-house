@@ -209,3 +209,36 @@
   border-bottom: 1px solid #eee;
   margin-bottom: 6px;
 }
+
+/* ==============================================
+   Notification Bell
+============================================== */
+
+.notif-bell {
+  position: relative;
+  font-size: 20px;
+  line-height: 1;
+  cursor: default;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* Badge số thông báo chưa đọc */
+.notif-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  min-width: 16px;
+  height: 16px;
+  background: #fff;
+  color: #ff5a5f;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  line-height: 1;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}

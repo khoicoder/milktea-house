@@ -30,10 +30,15 @@ include("../includes/header.php");
     <div class="cart-wrapper">
         <?php if (empty($cart_items)): ?>
             <div class="empty-cart">
+                <div style="font-size:64px;margin-bottom:16px;">🛒</div>
                 <p>Giỏ hàng của bạn đang trống.</p>
-                <a href="<?= BASE_URL ?>index.php" class="btn-go-shop">MUA NGAY</a>
+                <a href="<?= BASE_URL ?>index.php" class="btn-go-shop">🛍️ Mua ngay</a>
             </div>
         <?php else: ?>
+            <h2 class="cart-title">
+                🛒 Giỏ hàng của bạn
+                <span class="cart-count-badge"><?= count($cart_items) ?> sản phẩm</span>
+            </h2>
             <div class="cart-box cart-header">
                 <div class="col-check"><input type="checkbox" id="check-all" onclick="toggleCheckAll(this)"></div>
                 <div class="col-product">Sản Phẩm</div>
@@ -67,10 +72,18 @@ include("../includes/header.php");
                         <?= number_format($item['price'] * $item['quantity'], 0, ',', '.') ?>đ
                     </div>
                     <div class="col-action">
-                        <button class="btn-delete" onclick="removeItem(<?= $item['id'] ?>)">Xóa</button>
+                        <button class="btn-delete" onclick="removeItem(<?= $item['id'] ?>)">🗑️ Xóa</button>
                     </div>
                 </div>
                 <?php endforeach; ?>
+            </div>
+
+            <div class="cart-note">
+                <div class="cart-note-label">
+                    <span>📝 Ghi chú đơn hàng</span>
+                    <span class="cart-note-counter"><span id="note-char-count">0</span>/300</span>
+                </div>
+                <textarea id="order-note" maxlength="300" placeholder="Ví dụ: ít đường, không đá, thêm trân châu..." rows="2" oninput="updateNoteCounter(this)"></textarea>
             </div>
 
             <div class="cart-footer">
@@ -78,7 +91,7 @@ include("../includes/header.php");
                     <input type="checkbox" id="check-all-footer" onclick="toggleCheckAll(this)"> 
                     <label for="check-all-footer" style="cursor: pointer;">Chọn Tất Cả (<span id="total-count-selected">0</span>)</label>
         
-                    <button class="btn-delete-batch" onclick="removeSelectedItems()">Xóa</button>
+                    <button class="btn-delete-batch" onclick="removeSelectedItems()">🗑️ Xóa đã chọn</button>
                 </div>
                 
                 <div class="footer-right">
@@ -91,7 +104,7 @@ include("../includes/header.php");
                         Tổng thanh toán (<span id="total-items">0</span> Sản phẩm): 
                         <span class="total-price" id="total-price-display">0đ</span>
                     </div>
-                    <button class="btn-checkout" onclick="checkout()">Mua Hàng</button>
+                    <button class="btn-checkout" onclick="checkout()">Đặt hàng ngay →</button>
                 </div>
             </div>
         <?php endif; ?>
