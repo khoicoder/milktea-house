@@ -1,10 +1,6 @@
 <?php 
 require_once(__DIR__ . "/../config/config.php");
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
 $currentUser = null;
 $cartCount = isset($_SESSION['cart']) ? array_sum($_SESSION['cart']) : 0;
 
