@@ -1,69 +1,6 @@
 <?php
 require_once("../config/config.php");
 require_once("auth_admin.php");
-
-// --- TỰ ĐỘNG KHỞI TẠO CSDL NẾU THIẾU BẢNG ---
-$tables = [
-    "categories" => "CREATE TABLE IF NOT EXISTS categories (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(100),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
-
-    "products" => "CREATE TABLE IF NOT EXISTS products (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(100),
-        price DECIMAL(12,0),
-        image VARCHAR(255),
-        description TEXT,
-        category_id INT,
-        stock INT DEFAULT 10,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
-
-    "orders" => "CREATE TABLE IF NOT EXISTS orders (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        user_id INT,
-        total DECIMAL(12,0),
-        status ENUM('pending','processing','completed') DEFAULT 'pending',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
-
-    "order_items" => "CREATE TABLE IF NOT EXISTS order_items (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        order_id INT,
-        product_id INT,
-        qty INT,
-        price DECIMAL(12,0)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
-
-    "notifications" => "CREATE TABLE IF NOT EXISTS notifications (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        user_id INT DEFAULT 0,
-        title VARCHAR(255) NOT NULL,
-        message TEXT NOT NULL,
-        link VARCHAR(255) DEFAULT NULL,
-        is_read TINYINT(1) DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"
-];
-
-foreach ($tables as $name => $sql) {
-    mysqli_query($conn, $sql);
-}
-
-// Thêm dữ liệu mẫu nếu bảng trống để Dashboard có cái hiển thị
-$check_prod = mysqli_query($conn, "SELECT id FROM products LIMIT 1");
-if (mysqli_num_rows($check_prod) == 0) {
-    mysqli_query($conn, "INSERT IGNORE INTO categories(id, name) VALUES (1, 'Trà sữa'), (2, 'Trà trái cây')");
-    mysqli_query($conn, "INSERT IGNORE INTO products(name, price, category_id, stock, description) VALUES 
-        ('Trà sữa trân châu', 45000, 1, 50, 'Vị truyền thống ngon tuyệt'),
-        ('Trà xoai xanh', 35000, 2, 30, 'Thơm ngon mát lạnh')");
-    mysqli_query($conn, "INSERT IGNORE INTO orders(user_id, total, status) VALUES (1, 80000, 'completed')");
-    mysqli_query($conn, "INSERT IGNORE INTO order_items(order_id, product_id, qty, price) VALUES (1, 1, 1, 45000), (1, 2, 1, 35000)");
-}
-// --------------------------------------------
-
 // Hàm helper để query an toàn
 function get_stat($conn, $sql) {
     $result = mysqli_query($conn, $sql);

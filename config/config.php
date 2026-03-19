@@ -7,4 +7,4 @@ $db = new Database();
 $conn = $db->conn; 
 
 
-//http://localhost/milktea-house/config/migrate.php
+// http://localhost/milktea-house/config/migrate.php

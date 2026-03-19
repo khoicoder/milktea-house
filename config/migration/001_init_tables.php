@@ -10,7 +10,11 @@ return function($conn) {
         username VARCHAR(50) UNIQUE,
         email VARCHAR(120) UNIQUE,
         password VARCHAR(255),
-        role ENUM('admin','user') DEFAULT 'user',
+        display_name VARCHAR(100) NULL,
+        avatar VARCHAR(255) NULL,
+        role ENUM('guest','user','admin') DEFAULT 'user',
+        reset_token VARCHAR(255) NULL,
+        reset_token_expire DATETIME NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
 
@@ -18,7 +22,7 @@ return function($conn) {
     $conn->query("
     CREATE TABLE IF NOT EXISTS categories (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(100),
+        name VARCHAR(100) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
 
@@ -27,27 +31,32 @@ return function($conn) {
     CREATE TABLE IF NOT EXISTS products (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100),
-        price DECIMAL(12,0),
+        price DECIMAL(10,2),
         image VARCHAR(255),
         description TEXT,
         category_id INT,
         stock INT DEFAULT 10,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+        INDEX(category_id)
     )");
 
-    // ORDERS (✅ FK ở đây là đủ)
+    // ORDERS
     $conn->query("
     CREATE TABLE IF NOT EXISTS orders (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT,
         total DECIMAL(12,0),
-        status ENUM('pending','processing','completed') DEFAULT 'pending',
+        status ENUM('pending','processing','shipped','completed','cancelled') DEFAULT 'pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+        INDEX(created_at),
+
         CONSTRAINT fk_orders_user 
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )");
 
-    // ORDER ITEMS (✅ thêm FK luôn)
+    // ORDER ITEMS
     $conn->query("
     CREATE TABLE IF NOT EXISTS order_items (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -55,6 +64,8 @@ return function($conn) {
         product_id INT,
         qty INT,
         price DECIMAL(12,0),
+
+        INDEX(product_id),
 
         CONSTRAINT fk_items_order 
         FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
@@ -69,10 +80,9 @@ return function($conn) {
         id INT AUTO_INCREMENT PRIMARY KEY,
         admin_id INT,
         action VARCHAR(255),
+        meta TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
 
     $conn->query("SET FOREIGN_KEY_CHECKS=1");
-
-
 };
