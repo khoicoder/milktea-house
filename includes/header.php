@@ -1,17 +1,25 @@
-<?php require_once(__DIR__ . "/../config/config.php");?>
+<?php 
+require_once(__DIR__ . "/../config/config.php");
 
-
-<?php
-$currentUser = null;
-$cartCount = 0;
-
-if(isset($_SESSION['cart'])){
-    $cartCount = array_sum($_SESSION['cart']);
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
+$currentUser = null;
+$cartCount = isset($_SESSION['cart']) ? array_sum($_SESSION['cart']) : 0;
+
+// ===== LẤY USER =====
 if(isset($_SESSION['user_id'])){
+
     $uid = (int)$_SESSION['user_id'];
-    $stmt = mysqli_prepare($conn,"SELECT id,username,display_name,avatar,role FROM users WHERE id=?");
+
+    $sql = "SELECT id, username, display_name, avatar, role FROM users WHERE id=?";
+    $stmt = mysqli_prepare($conn, $sql);
+
+    if (!$stmt) {
+        die("SQL Error: " . mysqli_error($conn));
+    }
+
     mysqli_stmt_bind_param($stmt,"i",$uid);
     mysqli_stmt_execute($stmt);
 
@@ -19,35 +27,18 @@ if(isset($_SESSION['user_id'])){
     $currentUser = mysqli_fetch_assoc($result);
 }
 
-// TÍNH TỔNG SỐ LƯỢNG SẢN PHẨM TRONG GIỎ HÀNG
-$cart_count = 0;
-if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
-    $cart_count = array_sum($_SESSION['cart']);
-}
-?>
-
-<?php
-$currentUser = null;
-
-if(isset($_SESSION['user_id'])){
-
-$uid = (int)$_SESSION['user_id'];
-
-$stmt = mysqli_prepare($conn,"SELECT id,username,display_name,avatar,role FROM users WHERE id=?");
-mysqli_stmt_bind_param($stmt,"i",$uid);
-mysqli_stmt_execute($stmt);
-
-$result = mysqli_stmt_get_result($stmt);
-$currentUser = mysqli_fetch_assoc($result);
-
-// Fetch notifications
+// ===== NOTIFICATION =====
 $notifications = [];
 $unreadCount = 0;
+
 if ($currentUser) {
+
     $uid = (int)$currentUser['id'];
+
     $sql_noti = "SELECT * FROM notifications 
                  WHERE user_id = ? OR user_id = 0 
                  ORDER BY created_at DESC LIMIT 10";
+
     $stmt_noti = mysqli_prepare($conn, $sql_noti);
 
     if ($stmt_noti) {
@@ -61,7 +52,8 @@ if ($currentUser) {
         }
     }
 }
-}
+?>
+<?php
 ?>
 <!DOCTYPE html>
 <html>
