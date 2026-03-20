@@ -1,37 +1,188 @@
+/* ==============================================
+   HEADER STYLES
+============================================== */
+
+:root {
+  --primary-color: #ff5a5f;
+  --secondary-color: #2b2d42;
+  --text-color: #333;
+  --light-gray: #f8f9fa;
+  --border-color: #eee;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --transition: all 0.3s ease;
+}
+
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 40px;
-  background: #ff5a5f;
-  color: #fff;
+  background: #ffffff;
+  box-shadow: var(--shadow);
   position: sticky;
   top: 0;
   z-index: 1000;
+  height: 80px;
+  display: flex;
+  align-items: center;
 }
 
-.logo {
-  font-size: 26px; /* Tăng từ 22px lên 26px */
-  font-weight: 700;
+.header-container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+/* Logo */
+.logo a {
+  font-size: 24px;
+  font-weight: 800;
   text-decoration: none;
-  color: white;
+  color: var(--secondary-color);
+  letter-spacing: -1px;
+  white-space: nowrap;
 }
 
+.logo a span {
+  color: var(--primary-color);
+}
+
+/* Navigation Menu */
 .menu {
   display: flex;
-  gap: 25px; /* Tăng khoảng cách giữa các menu */
+  gap: 10px;
 }
 
 .menu a {
-  color: white;
+  color: var(--text-color);
   text-decoration: none;
-  font-weight: 600; /* Tăng độ đậm */
-  font-size: 17px; /* Thêm kích thước chữ 17px */
+  font-weight: 600;
+  font-size: 15px;
+  padding: 8px 15px;
+  border-radius: 8px;
+  transition: var(--transition);
 }
 
 .menu a:hover {
-  opacity: 0.9;
-  text-decoration: underline;
+  color: var(--primary-color);
+  background: rgba(255, 90, 95, 0.05);
+}
+
+.menu a.active {
+  color: var(--primary-color);
+  background: rgba(255, 90, 95, 0.1);
+}
+
+/* Header Right Sections */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Cart Icon */
+.cart-icon {
+  position: relative;
+  color: var(--secondary-color);
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 50%;
+  transition: var(--transition);
+}
+
+.cart-icon:hover {
+  background: var(--light-gray);
+  color: var(--primary-color);
+}
+
+.cart-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--primary-color);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+}
+
+/* Auth Buttons */
+.auth-btns {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.btn-outline {
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+.btn-outline:hover {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: #fff;
+  border: 1px solid var(--primary-color);
+}
+
+.btn-primary:hover {
+  background: #e04b50;
+  box-shadow: 0 4px 12px rgba(255, 90, 95, 0.3);
+}
+
+/* Notification Bell & User Menu */
+.noti-wrapper, .user-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.noti-bell {
+  color: var(--secondary-color);
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.noti-bell:hover {
+  background: var(--light-gray);
+  color: var(--primary-color);
+}
+
+.noti-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--primary-color);
+  color: #fff;
+  font-size: 9px;
+  padding: 2px 4px;
+  border-radius: 10px;
+  border: 2px solid #fff;
 }
 
 .avatar {
@@ -39,251 +190,216 @@
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid white;
+  border: 2px solid var(--border-color);
   cursor: pointer;
-}
-
-/* ===== Header dropdown: non-intrusive, no layout shift ===== */
-.header {
-  /* đảm bảo header không thay đổi khi dropdown bật */
-  position: relative;
-  z-index: 900;
-}
-
-/* wrapper giới hạn width (nếu chưa có) */
-.header .header-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 64px; /* ổn định chiều cao header */
-  box-sizing: border-box;
-}
-
-/* Đảm bảo các phần tử trong header-right nằm ngang hàng */
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 20px; /* Khoảng cách giữa chuông và avatar */
-}
-
-.avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  cursor: pointer;
-  transition: transform 0.2s;
+  transition: var(--transition);
 }
 
 .avatar:hover {
-  transform: scale(1.05);
-  border-color: #fff;
+  border-color: var(--primary-color);
 }
 
-/* user menu wrapper */
-.user-menu {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-/* dropdown chuẩn - Dùng display để tránh xung đột */
-.user-dropdown {
+/* Dropdowns refinement */
+.user-dropdown, .noti-dropdown {
   position: absolute;
-  top: 50px;
+  top: calc(100% + 15px); /* Đẩy xuống dưới header 1 khoảng nhỏ */
   right: 0;
-  min-width: 200px;
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  padding: 10px;
-  box-sizing: border-box;
-  display: none; 
+  border-radius: 15px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  display: none;
+  animation: fadeInDown 0.3s ease;
   z-index: 1100;
-  border: 1px solid #eee;
 }
 
-/* Hiển thị khi có class open */
-.user-menu.open .user-dropdown {
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.user-menu.open .user-dropdown,
+.noti-dropdown.active {
   display: block;
+}
+
+.user-dropdown {
+  width: 220px;
+  padding: 10px;
+}
+
+.user-name {
+  padding: 10px 15px;
+  font-weight: 700;
+  color: var(--secondary-color);
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 5px;
 }
 
 .user-dropdown a {
   display: block;
-  color: #333;
   padding: 10px 15px;
+  color: var(--text-color);
   text-decoration: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 14px;
-  font-weight: 500;
-  transition: background 0.2s;
+  transition: var(--transition);
 }
 
 .user-dropdown a:hover {
-  background: #fff5f5;
-  color: #ff5a5f;
+  background: var(--light-gray);
+  color: var(--primary-color);
 }
 
-.user-name {
-  font-weight: 700;
-  padding: 10px 15px;
-  border-bottom: 1px solid #eee;
-  margin-bottom: 5px;
-  color: #ff5a5f;
-  font-size: 14px;
-}
-
-
-/* ==============================================
-   Notification Bell
-============================================== */
-
-/* Container chuông */
-.noti-wrapper {
-    position: relative;
-    margin-right: 15px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-}
-
-.noti-bell {
-    position: relative;
-    padding: 5px;
-    color: #fff;
-    transition: transform 0.2s;
-    display: flex;
-    align-items: center;
-}
-
-.noti-bell:hover {
-    transform: scale(1.1);
-}
-
-/* Badge số lượng */
-.noti-badge {
-    position: absolute;
-    top: -2px;
-    right: -2px;
-    background-color: #fff;
-    color: #ff5a5f;
-    font-size: 10px;
-    padding: 2px 5px;
-    border-radius: 50%;
-    font-weight: bold;
-    border: 1px solid #ff5a5f;
-    line-height: 1;
-}
-
-/* Dropdown Menu */
+/* Notification Dropdown Style */
 .noti-dropdown {
-    position: absolute;
-    top: 50px;
-    right: 0;
-    width: 320px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    display: none; /* Ẩn mặc định */
-    z-index: 1001;
-    overflow: hidden;
-    animation: slideDownNoti 0.3s ease;
+    width: 380px;
+    padding: 0;
 }
 
-@keyframes slideDownNoti {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.noti-dropdown.active {
-    display: block;
-}
-
-/* Header & Footer của dropdown */
 .noti-header {
-    padding: 15px;
-    border-bottom: 1px solid #eee;
+    padding: 15px 20px;
+    background: #fff;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #fff;
+    border-bottom: 1px solid var(--border-color);
 }
 
-.noti-header h3 {
-    margin: 0;
-    font-size: 16px;
-    color: #333;
+.noti-header h3 { 
+    font-size: 16px; 
+    margin: 0; 
+    color: var(--secondary-color);
+    font-weight: 700;
 }
 
 .noti-close {
-    font-size: 20px;
-    color: #999;
     cursor: pointer;
+    color: #999;
+    font-size: 20px;
+    line-height: 1;
+    transition: var(--transition);
 }
 
-.noti-footer {
-    padding: 10px;
-    text-align: center;
-    border-top: 1px solid #eee;
-    background: #fdfdfd;
+.noti-close:hover { color: var(--primary-color); }
+
+.noti-list { 
+    max-height: 380px; 
+    overflow-y: auto; 
 }
 
-.noti-footer a {
-    color: #ff5a5f;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-/* Danh sách thông báo */
-.noti-list {
-    max-height: 350px;
-    overflow-y: auto;
-}
+/* Custom scrollbar for noti-list */
+.noti-list::-webkit-scrollbar { width: 6px; }
+.noti-list::-webkit-scrollbar-track { background: #f1f1f1; }
+.noti-list::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
+.noti-list::-webkit-scrollbar-thumb:hover { background: #ccc; }
 
 .noti-item {
+    padding: 15px 20px;
     display: block;
-    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
     text-decoration: none;
-    color: #333;
-    border-bottom: 1px solid #f9f9f9;
-    transition: background 0.2s;
+    transition: var(--transition);
+    background: #fff;
 }
 
-.noti-item:hover {
-    background: #fff5f5;
+.noti-item:last-child { border-bottom: none; }
+
+.noti-item:hover { background: var(--light-gray); }
+
+.noti-item.unread { 
+    background: rgba(255, 90, 95, 0.03); 
+    border-left: 3px solid var(--primary-color); 
 }
 
-.noti-item.unread {
-    background: #fffafb;
-    border-left: 3px solid #ff5a5f;
+.noti-title { 
+    font-weight: 700; 
+    font-size: 14px; 
+    margin: 0 0 4px 0; 
+    color: var(--secondary-color); 
 }
 
-.noti-title {
-    font-weight: 600;
-    margin: 0 0 3px 0;
-    font-size: 14px;
-    color: #333;
+.noti-msg { 
+    font-size: 13px; 
+    color: #666; 
+    margin: 0 0 6px 0; 
+    line-height: 1.5; 
 }
 
-.noti-msg {
-    margin: 0 0 5px 0;
-    font-size: 13px;
-    color: #666;
-    line-height: 1.4;
-}
-
-.noti-time {
-    color: #999;
-    font-size: 11px;
+.noti-time { 
+    font-size: 11px; 
+    color: #aaa;
+    display: block;
 }
 
 .noti-empty {
-    padding: 30px;
+    padding: 40px 20px;
     text-align: center;
     color: #999;
+    font-size: 14px;
+}
+
+.noti-footer {
+    padding: 12px;
+    text-align: center;
+    background: var(--light-gray);
+    border-top: 1px solid var(--border-color);
+}
+
+.noti-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    transition: var(--transition);
+}
+
+.noti-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Mobile Toggle */
+.mobile-toggle {
+    display: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    color: var(--secondary-color);
+}
+
+.mobile-toggle:hover {
+    background: var(--light-gray);
+}
+
+/* ==============================================
+   RESPONSIVE DESIGN
+============================================== */
+
+@media (max-width: 1024px) {
+    .menu { display: none; }
+    .mobile-toggle { display: block; }
+    
+    .menu.mobile-active {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 80px;
+        left: 0;
+        right: 0;
+        background: #fff;
+        padding: 20px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        gap: 5px;
+    }
+}
+
+@media (max-width: 768px) {
+    .search-bar { display: none; }
+    .header-container { padding: 0 15px; }
+}
+
+@media (max-width: 480px) {
+    .logo a { font-size: 20px; }
+    .auth-btns .btn-outline { display: none; }
 }
