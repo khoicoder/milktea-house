@@ -1,6 +1,6 @@
 <?php
 return function($conn) {
-    // Đảm bảo các cột phone và address có kiểu TEXT để lưu được nhiều dữ liệu (JSON)
+ 
     $conn->query("ALTER TABLE users MODIFY COLUMN phone TEXT");
     $conn->query("ALTER TABLE users MODIFY COLUMN address TEXT");
 

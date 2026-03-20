@@ -1,6 +1,5 @@
 <?php
 return function($conn) {
-
     $conn->query("
     CREATE TABLE IF NOT EXISTS notifications (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -10,7 +9,6 @@ return function($conn) {
         link VARCHAR(255) DEFAULT NULL,
         is_read TINYINT(1) DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
         CONSTRAINT fk_notifications_user
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )

@@ -1,36 +1,3 @@
-const ctx = document.getElementById("chart");
-fetch("api/revenue.php")
-  .then((res) => res.json())
-  .then((data) => {
-    const labels = data.map((i) => i.day);
-    const values = data.map((i) => i.revenue);
-
-    new Chart(document.getElementById("chart"), {
-      type: "line",
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: "Doanh thu",
-            data: values,
-            tension: 0.3,
-          },
-        ],
-      },
-    });
-    // new Chart(ctx, {
-    //   type: 'line',
-    //   data: {
-    //     labels: ['T2','T3','T4','T5','T6','T7','CN'],
-    //     datasets: [{
-    //       label: 'Doanh thu',
-    //       data: [100,200,150,300,250,400,350],
-    //       tension: 0.3
-    //     }]
-    //   }
-    // });
-  });
-
 function deleteOrder(id) {
   if (!confirm("Xóa đơn hàng?")) return;
 
