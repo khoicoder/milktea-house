@@ -1,4 +1,60 @@
-<?php require_once(__DIR__ . "/header_logic.php"); ?>
+<?php 
+require_once(__DIR__ . "/../config/config.php");
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$currentUser = null;
+$cartCount = isset($_SESSION['cart']) ? array_sum($_SESSION['cart']) : 0;
+
+// ===== LẤY USER =====
+if(isset($_SESSION['user_id'])){
+
+    $uid = (int)$_SESSION['user_id'];
+
+    $sql = "SELECT id, username, display_name, avatar, role FROM users WHERE id=?";
+    $stmt = mysqli_prepare($conn, $sql);
+
+    if (!$stmt) {
+        die("SQL Error: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt,"i",$uid);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    $currentUser = mysqli_fetch_assoc($result);
+}
+
+// ===== NOTIFICATION =====
+$notifications = [];
+$unreadCount = 0;
+
+if ($currentUser) {
+
+    $uid = (int)$currentUser['id'];
+
+    $sql_noti = "SELECT * FROM notifications 
+                 WHERE user_id = ? OR user_id = 0 
+                 ORDER BY created_at DESC LIMIT 10";
+
+    $stmt_noti = mysqli_prepare($conn, $sql_noti);
+
+    if ($stmt_noti) {
+        mysqli_stmt_bind_param($stmt_noti, "i", $uid);
+        mysqli_stmt_execute($stmt_noti);
+        $res_noti = mysqli_stmt_get_result($stmt_noti);
+
+        while ($row = mysqli_fetch_assoc($res_noti)) {
+            $notifications[] = $row;
+            if ($row['is_read'] == 0) $unreadCount++;
+        }
+    }
+}
+?>
+<?php
+?>
 <!DOCTYPE html>
 <html>
 <head>
