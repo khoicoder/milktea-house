@@ -91,18 +91,30 @@ function toggleNotiMenu() {
   if (userMenu) userMenu.classList.remove("open");
 }
 
+/* ==============================
+   MOBILE MENU TOGGLE
+============================== */
+
+function toggleMobileMenu() {
+  const mainMenu = document.getElementById("mainMenu");
+  if (mainMenu) {
+    mainMenu.classList.toggle("mobile-active");
+  }
+}
+
 /* close dropdown when click outside */
 
 document.addEventListener("click", function (e) {
   const userMenu = document.querySelector(".user-menu");
   const notiWrapper = document.querySelector(".noti-wrapper");
   const notiDropdown = document.getElementById("notiDropdown");
+  const mainMenu = document.getElementById("mainMenu");
+  const mobileToggle = document.querySelector(".mobile-toggle");
 
   // Handle User Menu
   if (userMenu && !userMenu.contains(e.target)) {
     userMenu.classList.remove("open");
   } else if (userMenu && userMenu.contains(e.target) && e.target.tagName === 'A') {
-    // Nếu click vào link bên trong menu thì cứ để nó chuyển trang bình thường
     userMenu.classList.remove("open");
   }
 
@@ -111,6 +123,11 @@ document.addEventListener("click", function (e) {
     if (notiDropdown && notiDropdown.classList.contains("active")) {
       notiDropdown.classList.remove("active");
     }
+  }
+
+  // Handle Mobile Menu
+  if (mainMenu && !mainMenu.contains(e.target) && mobileToggle && !mobileToggle.contains(e.target)) {
+    mainMenu.classList.remove("mobile-active");
   }
 });
 

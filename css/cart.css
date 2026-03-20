@@ -340,8 +340,8 @@
 .cart-page .footer-right {
   display: flex;
   align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
+  gap: 16px;
+  flex-wrap: nowrap;
   justify-content: flex-end;
   margin-left: auto;
 }
@@ -357,7 +357,7 @@
 }
 
 .cart-page .discount-area input {
-  padding: 9px 14px;
+  padding: 5px 10px;
   border: 1.5px solid #e8e8e8;
   border-radius: 10px;
   font-size: 15px;
