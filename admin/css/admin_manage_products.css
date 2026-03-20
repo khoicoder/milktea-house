@@ -1,0 +1,142 @@
+/* ===== PAGE ===== */
+.dashboard {
+  padding: 24px;
+}
+
+.dashboard h1 {
+  margin-bottom: 16px;
+  font-size: 28px;
+}
+
+/* ===== ADD BUTTON ===== */
+.dashboard > a {
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 10px 16px;
+  background: linear-gradient(90deg, #ff5a5f, #ff7a66);
+  color: #fff;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* ===== FILTER ===== */
+.filter-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.filter-box input,
+.filter-box select {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.filter-box button {
+  background: #111827;
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* ===== BOX ===== */
+.box {
+  background: #fff;
+  padding: 18px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+/* ===== TABLE ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  text-align: left;
+  color: #666;
+}
+
+tr:hover {
+  background: #fafafa;
+}
+
+/* ===== IMAGE ===== */
+.product-img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* ===== BADGE ===== */
+.badge {
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: #fff;
+}
+
+.in-stock {
+  background: #22c55e;
+}
+
+.out-stock {
+  background: #ef4444;
+}
+
+/* ===== ACTION ===== */
+.actions a {
+  margin-right: 8px;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+.actions .edit {
+  color: #2563eb;
+}
+
+.actions .delete {
+  color: #ef4444;
+}
+
+.product-img {
+  width: 55px;
+  height: 55px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #eee;
+}
+
+.actions a {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-right: 6px;
+  transition: 0.2s;
+}
+
+.actions .edit {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.actions .delete {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.actions a:hover {
+  transform: translateY(-1px);
+}

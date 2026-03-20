@@ -6,7 +6,7 @@ function loadRevenueChart() {
 
   const params = new URLSearchParams(new FormData(form)).toString();
 
-  fetch(`../api/revenue.php?${params}`)
+  fetch(`api/revenue.php?${params}`)
     .then((res) => res.json())
     .then((data) => {
       const labels = data.map((i) => i.label);
@@ -76,6 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (form) {
     form.addEventListener("submit", (e) => {
+      console.log("Form submitted");
       e.preventDefault();
       loadRevenueChart();
     });

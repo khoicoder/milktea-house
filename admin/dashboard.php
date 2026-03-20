@@ -70,25 +70,28 @@ $recentOrders = mysqli_query($conn, "
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard - MilkTea House</title>
-    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="css/admin.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="../js/admin_chart.js" defer ></script>
+    <script src="js/admin_chart.js" defer >"lỗi"</script>
 </head>
 <body>
-
 <div class="layout">
 
+    <!-- ===== SIDEBAR ===== -->
     <aside class="sidebar">
         <h2>🧋 MilkTea Admin</h2>
-        <a href="dashboard.php">📊 Dashboard</a>
+
+        <a class="active" href="dashboard.php">📊 Dashboard</a>
         <a href="pages/manage_products.php">📦 Sản phẩm</a>
         <a href="pages/orders.php">🧾 Đơn hàng</a>
         <a href="pages/users.php">👤 Người dùng</a>
         <a href="pages/notifications.php">🔔 Thông báo</a>
     </aside>
 
+    <!-- ===== MAIN ===== -->
     <main class="main">
 
+        <!-- TOPBAR -->
         <div class="topbar">
             <div>
                 <h1>Dashboard</h1>
@@ -97,6 +100,7 @@ $recentOrders = mysqli_query($conn, "
             <a class="topbar-link" href="../index.php">🏠 Trang chủ</a>
         </div>
 
+        <!-- STATS -->
         <section class="stats">
             <div class="card">
                 <h3>Users</h3>
@@ -119,66 +123,68 @@ $recentOrders = mysqli_query($conn, "
             </div>
         </section>
 
-        <section class="box chart-box">
+        <!-- CHART -->
+        <section class="chart-box" >
             <div class="box-head">
-                <div>
-                    <h2>📈 Doanh thu</h2>
-                    <p class="subtext">Lọc theo khoảng thời gian, đổi kiểu biểu đồ linh hoạt</p>
-                </div>
+                <h2>📈 Doanh thu</h2>
+                <p class="subtext">Lọc theo khoảng thời gian</p>
             </div>
 
-            <form id="filterForm" class="chart-toolbar">
-                <div class="field">
+            <form class="chart-toolbar" id="filterForm">
+                <div class="field" >
                     <label>Từ ngày</label>
-                    <input type="date" name="from" value="<?= htmlspecialchars($from) ?>">
+                    <input type="date" name="from_date">
                 </div>
 
                 <div class="field">
                     <label>Đến ngày</label>
-                    <input type="date" name="to" value="<?= htmlspecialchars($to) ?>">
+                    <input type="date" name = "to_date">
                 </div>
 
                 <div class="field">
                     <label>Nhóm theo</label>
-                    <select name="period" id="period">
-                        <option value="day" <?= $period === 'day' ? 'selected' : '' ?>>Theo ngày</option>
-                        <option value="month" <?= $period === 'month' ? 'selected' : '' ?>>Theo tháng</option>
+                    <select name="period" id="periodSelect"> >
+                        <option value="day" selected>Theo ngày</option>
+                        <option value="month">Theo tháng</option>
                     </select>
                 </div>
 
                 <div class="field">
                     <label>Kiểu chart</label>
-                    <select name="chartType" id="chartType">
-                        <option value="bar" <?= $chartType === 'bar' ? 'selected' : '' ?>>Bar</option>
-                        <option value="line" <?= $chartType === 'line' ? 'selected' : '' ?>>Line</option>
+                    <select name="chart_type" id="chartType">
+                        <option value="bar" >Bar</option>
+                        <option value="line" selected>Line</option>
                     </select>
                 </div>
 
-                <button type="submit" class="btn-primary">Lọc</button>
+                <button class="btn-primary" type="submit">Lọc</button>
             </form>
 
             <div class="chart-wrap">
-                <canvas id="revenueChart" height="110"></canvas>
+                <canvas id="revenueChart"></canvas>
             </div>
         </section>
 
+        <!-- ACTION -->
         <section class="box action">
             <div>
                 <h2>🔔 Gửi thông báo</h2>
-                <p class="subtext">Gửi thông báo mới cho khách hàng nhanh chóng.</p>
+                <p class="subtext">Gửi thông báo nhanh cho khách hàng</p>
             </div>
-            <a class="btn-primary" href="pages/notifications.php">Gửi ngay →</a>
+            <a class="btn-primary" href="pages/notifications.php" style="color: white;">Gửi ngay →</a>
         </section>
 
+        <!-- GRID -->
         <section class="grid-2">
+
             <div class="box">
                 <h2>🔥 Top sản phẩm</h2>
                 <table>
                     <tr><th>Tên</th><th>Bán</th></tr>
-                    <?php if ($topProducts) while ($p = mysqli_fetch_assoc($topProducts)) { ?>
+                    <?php while ($p = mysqli_fetch_assoc($topProducts)) { ?>
                         <tr>
-                            <td><?= htmlspecialchars($p['name']) ?></td>
-                            <td><?= number_format($p['total']) ?></td>
+                            <td><?= $p['name'] ?></td>
+                            <td><?= $p['total'] ?></td>
                         </tr>
                     <?php } ?>
                 </table>
@@ -188,33 +194,40 @@ $recentOrders = mysqli_query($conn, "
                 <h2>👤 User mới</h2>
                 <table>
                     <tr><th>Username</th><th>Email</th></tr>
-                    <?php if ($newUsers) while ($u = mysqli_fetch_assoc($newUsers)) { ?>
+                    <?php while ($u = mysqli_fetch_assoc($newUsers)) { ?>
                         <tr>
-                            <td><?= htmlspecialchars($u['username']) ?></td>
-                            <td><?= htmlspecialchars($u['email']) ?></td>
+                            <td><?= $u['username'] ?></td>
+                            <td><?= $u['email'] ?></td>
                         </tr>
                     <?php } ?>
                 </table>
             </div>
+
         </section>
 
+        <!-- ORDERS -->
         <section class="box">
             <h2>🧾 Đơn hàng gần đây</h2>
             <table>
                 <tr>
-                    <th>Mã đơn</th>
-                    <th>User ID</th>
-                    <th>Tổng tiền</th>
+                    <th>Mã</th>
+                    <th>User</th>
+                    <th>Tổng</th>
                     <th>Trạng thái</th>
-                    <th>Ngày tạo</th>
+                    <th>Ngày</th>
                 </tr>
-                <?php if ($recentOrders) while ($o = mysqli_fetch_assoc($recentOrders)) { ?>
+
+                <?php while ($o = mysqli_fetch_assoc($recentOrders)) { ?>
                     <tr>
-                        <td>#<?= (int)$o['id'] ?></td>
-                        <td><?= (int)$o['user_id'] ?></td>
-                        <td><?= number_format((float)$o['total'], 0, ',', '.') ?>đ</td>
-                        <td><?= htmlspecialchars($o['status']) ?></td>
-                        <td><?= htmlspecialchars($o['created_at']) ?></td>
+                        <td>#<?= $o['id'] ?></td>
+                        <td><?= $o['user_id'] ?></td>
+                        <td><?= number_format($o['total']) ?>đ</td>
+                        <td>
+                            <span class="badge <?= $o['status'] ?>">
+                                <?= $o['status'] ?>
+                            </span>
+                        </td>
+                        <td><?= $o['created_at'] ?></td>
                     </tr>
                 <?php } ?>
             </table>

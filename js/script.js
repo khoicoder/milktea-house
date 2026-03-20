@@ -1,6 +1,3 @@
-/* ==============================
-============================== */
-// script.js (dùng biến global được set bởi PHP)
 const BASE = window.BASE_URL ? window.BASE_URL : "/milktea-house/";
 // NOTE: dùng BASE thay vì BASE_URL để tránh tên trùng
 
@@ -38,7 +35,6 @@ function addCart(id) {
         }
       } catch (err) {
         console.error("Invalid JSON from add_cart.php:", err, text);
-        // hiển thị 1 thông báo thân thiện
         showToast("Lỗi server: response không hợp lệ. Kiểm tra console.");
       }
     })
@@ -114,7 +110,11 @@ document.addEventListener("click", function (e) {
   // Handle User Menu
   if (userMenu && !userMenu.contains(e.target)) {
     userMenu.classList.remove("open");
-  } else if (userMenu && userMenu.contains(e.target) && e.target.tagName === 'A') {
+  } else if (
+    userMenu &&
+    userMenu.contains(e.target) &&
+    e.target.tagName === "A"
+  ) {
     userMenu.classList.remove("open");
   }
 
@@ -126,7 +126,12 @@ document.addEventListener("click", function (e) {
   }
 
   // Handle Mobile Menu
-  if (mainMenu && !mainMenu.contains(e.target) && mobileToggle && !mobileToggle.contains(e.target)) {
+  if (
+    mainMenu &&
+    !mainMenu.contains(e.target) &&
+    mobileToggle &&
+    !mobileToggle.contains(e.target)
+  ) {
     mainMenu.classList.remove("mobile-active");
   }
 });

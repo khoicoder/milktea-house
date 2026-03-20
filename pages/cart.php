@@ -26,6 +26,7 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
 $page_css="cart.css";
 include("../includes/header.php");
 ?>
+<script src="<?= BASE_URL ?>js/form_checkout.js"></script>
 <div class="cart-page">
     <div class="cart-wrapper">
         <?php if (empty($cart_items)): ?>
@@ -104,7 +105,7 @@ include("../includes/header.php");
                         Tổng thanh toán (<span id="total-items">0</span> Sản phẩm): 
                         <span class="total-price" id="total-price-display">0đ</span>
                     </div>
-                    <button class="btn-checkout" onclick="checkout()">Đặt hàng ngay</button>
+                    <button class="btn-checkout" onclick="goToCheckout()">Đặt hàng ngay</button>
                 </div>
             </div>
         <?php endif; ?>
