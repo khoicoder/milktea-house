@@ -468,32 +468,26 @@ table tr:hover td {
   text-decoration: underline;
 }
 
-/* ===== BADGES ===== */
 .badge {
-  display: inline-block;
-  padding: 6px 10px;
-  border-radius: 999px;
+  padding: 4px 10px;
+  border-radius: 20px;
   font-size: 12px;
-  font-weight: 700;
-  color: #fff;
+  font-weight: 600;
+  display: inline-block;
+  color: #fff; /* 👈 QUAN TRỌNG */
 }
 
-.badge.completed,
-.badge.in-stock {
-  background: linear-gradient(90deg, #16a34a, #22c55e);
+/* trạng thái */
+.badge.pending {
+  background: #3b82f6; /* xanh */
 }
 
-.badge.processing {
-  background: linear-gradient(90deg, #f59e0b, #f97316);
+.badge.cancelled {
+  background: #ef4444; /* đỏ */
 }
 
-.badge.cancelled,
-.badge.out-stock {
-  background: linear-gradient(90deg, #ef4444, #f973a9);
-}
-
-.badge.draft {
-  background: #6b7280;
+.badge.completed {
+  background: #22c55e; /* xanh lá */
 }
 
 /* ===== AVATAR ===== */
