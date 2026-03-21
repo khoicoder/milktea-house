@@ -6,6 +6,9 @@ require_once(__DIR__ . "/../auth_admin.php");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = intval($_POST['user_id'] ?? 0); 
+    if($user_id ===0){
+        $user_id = null; // Gửi cho tất cả người dùng
+    }
     $title = mysqli_real_escape_string($conn, $_POST['title']);
     $message = mysqli_real_escape_string($conn, $_POST['message']);
     $link = mysqli_real_escape_string($conn, $_POST['link'] ?? '');

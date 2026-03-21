@@ -13,9 +13,7 @@ if ($type === 'day') {
     $groupSql = "DATE_FORMAT(created_at, '%Y-%m')";
 }
 
-$sql = "
-    SELECT 
-        $labelSql AS label,
+$sql = "SELECT $labelSql AS label,
         COALESCE(SUM(total), 0) AS revenue
     FROM orders
     WHERE DATE(created_at) BETWEEN '$from' AND '$to'

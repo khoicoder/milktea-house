@@ -111,7 +111,7 @@ $res_users = mysqli_query($conn, $sql_users);
                     ?>
                         <tr>
                             <td>
-                                <?= $row['user_id'] == 0 ? '<span class="badge-all">TẤT CẢ</span>' : '👤 ' . htmlspecialchars($row['username']) ?>
+                                <?= $row['user_id'] == null ? '<span class="badge-all">TẤT CẢ</span>' : '👤 ' . htmlspecialchars($row['username']) ?>
                             </td>
                             <td>
                                 <div style="font-weight: 600; margin-bottom: 4px;"><?= htmlspecialchars($row['title']) ?></div>

@@ -1,6 +1,7 @@
 <?php
 require_once(__DIR__ . "/../config/config.php");
 
+
 $currentUser = null;
 $cartCount = 0;
 $notifications = [];
