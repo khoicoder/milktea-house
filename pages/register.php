@@ -104,17 +104,21 @@ if (isset($_POST["register"])) {
             <?php echo $emailError ?? ''; ?>
         </span>
 
-        <label>Mật khẩu</label>
-        <input type="password" name="password" id="password">
-        <span class="auth-error" id="passwordError">
-            <?php echo $passwordError ?? ''; ?>
-        </span>
-
-        <label>Xác nhận lại mật khẩu</label>
+       <label>Mật khẩu</label>
+<div class="password-wrapper">
+    <input type="password" name="password" id="password">
+    <span class="toggle-password" data-target="password">👁</span>
+</div>
+    <span class="auth-error" id="passwordError">
+        <?php echo $passwordError ?? ''; ?>
+    </span>
+    <label>Xác nhận lại mật khẩu</label>
+    <div class="password-wrapper">
         <input type="password" name="confirm_password" id="confirm_password">
-        <span class="auth-error" id="confirmError"></span>
-
-        <button type="submit" name="register">Đăng ký</button>
+        <span class="toggle-password" data-target="confirm_password">👁</span>
+    </div>
+<span class="auth-error" id="confirmError"></span>
+    <button type="submit" name="register">Đăng ký</button>
 
     </form>
 
@@ -128,6 +132,19 @@ if (isset($_POST["register"])) {
 </div>
 
 <script src="../js/script.js"></script>
+<script>
+document.querySelectorAll(".toggle-password").forEach(icon => {
+    icon.addEventListener("click", function () {
+        const targetId = this.getAttribute("data-target");
+        const input = document.getElementById(targetId);
+
+        const type = input.type === "password" ? "text" : "password";
+        input.type = type;
+
+        this.textContent = type === "password" ? "👁" : "🙈";
+    });
+});
+</script>
 
 </body>
 
