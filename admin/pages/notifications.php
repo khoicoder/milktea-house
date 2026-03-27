@@ -4,6 +4,10 @@ require_once(__DIR__ . "/../auth_admin.php");
 
 // Lấy danh sách user để admin chọn (nếu muốn gửi riêng)
 $sql_users = "SELECT id, username FROM users WHERE role != 'admin'";
+
+$admins = mysqli_query($conn, "
+    SELECT id FROM users WHERE role = 'admin'
+");
 $res_users = mysqli_query($conn, $sql_users);
 ?>
 <!DOCTYPE html>

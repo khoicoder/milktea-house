@@ -9,6 +9,7 @@ $users = mysqli_query($conn,"SELECT * FROM users ORDER BY id DESC");
 
 <div class="dashboard">
 <h1>👤 Quản lý User</h1>
+<a class="topbar-link" href="../dashboard.php">🏠 Trang chủ</a>
 
 <div class="box">
 <table>
