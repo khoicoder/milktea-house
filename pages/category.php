@@ -20,7 +20,7 @@ if ($min > $max) {
 $search_esc = mysqli_real_escape_string($conn, $search);
 
 // Query
-$sql = "SELECT id, name, price, image, description
+$sql = "SELECT id, name, price, image, description, stock
         FROM products
         WHERE category_id = {$category_id}
         AND price BETWEEN {$min} AND {$max}";
@@ -100,10 +100,15 @@ onerror="this.onerror=null;this.src='<?= BASE_URL ?>images/no-image.png';"
 <?= htmlspecialchars($row['description'] ?? '') ?>
 </p>
 
-<div class="price-wrap">
-<div class="price-sale">
-<?= number_format($row['price'],0,',','.') ?> VNĐ
-</div>
+<div class="product-meta">
+  <div class="price-wrap">
+    <div class="price-sale"><?= number_format($row['price'],0,',','.') ?> VNĐ</div>
+  </div>
+  <?php if (isset($row['stock']) && $row['stock'] > 0): ?>
+    <span class="status-badge status-in">Còn hàng</span>
+  <?php else: ?>
+    <span class="status-badge status-out">Hết hàng</span>
+  <?php endif; ?>
 </div>
 
 <div class="card-footer">

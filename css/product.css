@@ -207,6 +207,30 @@
   text-decoration: line-through;
 }
 
+/* status badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.status-in {
+  background: transparent;
+  color: #16a34a;
+  border: 1.5px solid #16a34a;
+}
+.status-out {
+  background: transparent;
+  color: #dc2626;
+  border: 1.5px solid #dc2626;
+}
+
 /* footer actions */
 .card-footer {
   display: flex;
