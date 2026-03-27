@@ -28,6 +28,7 @@ ORDER BY p.id DESC
 
 <div class="dashboard">
 <h1>🧋 Quản lý sản phẩm</h1>
+<a class="topbar-link" href="../dashboard.php">🏠 Trang chủ</a>
 
 <a href="add_product.php">➕ Thêm sản phẩm</a>
 

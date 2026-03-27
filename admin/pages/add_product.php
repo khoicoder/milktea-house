@@ -19,6 +19,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 <link rel="stylesheet" href="../css/admin.css">
 
 <div class="dashboard">
+<a class="topbar-link" href="../dashboard.php">🏠 Trang chủ</a>
 <h1>➕ Thêm sản phẩm</h1>
 
 <div class="box">

@@ -22,6 +22,7 @@ $statusLabels = [
 
 <div class="dashboard">
     <h1>📦 Quản lý đơn hàng</h1>
+    <a class="topbar-link" href="../dashboard.php">🏠 Trang chủ</a>
 
     <div class="box">
         <table>
