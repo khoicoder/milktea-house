@@ -1,48 +1,489 @@
+/* checkout.css — MilkTea House Premium Checkout */
+
+:root {
+  --brand: #ff5a5f;
+  --brand-dark: #e84a4f;
+  --text: #1e1e2e;
+  --muted: #6b7280;
+  --surface: #ffffff;
+  --bg: #f4f5f8;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 4px 24px rgba(18, 24, 33, 0.07);
+  --shadow-hover: 0 8px 32px rgba(255, 90, 95, 0.18);
+  --transition: 200ms ease;
+  --brand-light: rgba(255, 90, 95, 0.08);
+}
+
+/* ── Page wrapper ───────────────────────────── */
+.checkout-page {
+  background: var(--bg);
+  min-height: 100vh;
+  padding: 40px 16px 80px;
+  font-family: "Inter", "Segoe UI", sans-serif;
+  color: var(--text);
+}
+
+.checkout-wrapper {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+/* ── Heading ─────────────────────────────────── */
+.checkout-heading {
+  margin-bottom: 32px;
+}
+.checkout-heading h2 {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0 0 6px;
+  color: var(--text);
+}
+.checkout-heading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* ── Empty state ─────────────────────────────── */
+.empty-cart-msg {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+}
+.btn-back {
+  display: inline-block;
+  margin-top: 16px;
+  color: var(--brand);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* ── Grid layout ─────────────────────────────── */
 .checkout-container {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 820px) {
+  .checkout-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Card ────────────────────────────────────── */
+.section-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px 28px 32px;
+}
+
+.section-title {
   display: flex;
-  gap: 30px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f4;
+}
+.section-title h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}
+.section-icon {
+  font-size: 20px;
+  line-height: 1;
 }
 
-.checkout-left {
-  flex: 2;
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-.checkout-right {
-  flex: 1;
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
+/* ── Item list ───────────────────────────────── */
+.item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .checkout-item {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: #fafafa;
+  border: 1px solid #f0f0f4;
+  transition: background var(--transition);
+}
+.checkout-item:hover {
+  background: #f5f5f8;
 }
 
-.checkout-item img {
-  width: 60px;
-  height: 60px;
+.item-img-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #eee;
+}
+.item-img-wrap img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  display: block;
 }
 
+.item-meta {
+  flex: 1;
+  min-width: 0;
+}
+.item-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.item-price-row {
+  margin-top: 4px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.item-unit {
+  font-size: 13px;
+  color: var(--muted);
+}
+.item-qty {
+  font-size: 13px;
+  color: var(--muted);
+  background: #f0f0f4;
+  padding: 1px 7px;
+  border-radius: 20px;
+}
+
+.item-subtotal {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--brand);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Order total (left card) ─────────────────── */
+.order-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 2px dashed #f0f0f4;
+  font-size: 16px;
+  color: var(--muted);
+}
+.order-total strong {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--brand);
+}
+
+/* ── Form ────────────────────────────────────── */
 .form-group {
-  margin-bottom: 12px;
+  margin-bottom: 20px;
+}
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.total-box {
-  margin: 15px 0;
-  font-size: 18px;
+.form-group input[type="text"],
+.form-group input[type="tel"],
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  color: var(--text);
+  background: #fff;
+  box-sizing: border-box;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+  font-family: inherit;
+}
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-light);
+}
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* ── Field with dropdown ────────────────────── */
+.field-dropdown-wrap {
+  position: relative;
+}
+
+.field-display {
+  position: relative;
+  cursor: pointer;
+}
+.field-display input {
+  cursor: pointer;
+  padding-right: 36px !important;
+}
+.field-display input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-light);
+}
+
+.field-arrow {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 14px;
+  pointer-events: none;
+  transition: transform var(--transition);
+}
+.field-dropdown-wrap.open .field-arrow {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* Dropdown panel */
+.field-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.11);
+  z-index: 100;
+  overflow: hidden;
+  display: none;
+}
+.field-dropdown-wrap.open .field-dropdown {
+  display: block;
+}
+
+/* Dropdown item */
+.dropdown-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 14px;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background var(--transition);
+  border-bottom: 1px solid #f3f4f6;
+}
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+.dropdown-item:hover {
+  background: #f9fafb;
+}
+.dropdown-item.active {
+  background: var(--brand-light);
+  color: var(--brand);
+  font-weight: 600;
+}
+
+/* Check & Plus icons */
+.dropdown-check {
+  font-size: 13px;
+  color: transparent;          /* hidden by default */
+  flex-shrink: 0;
+  margin-top: 1px;
+  width: 16px;
+  text-align: center;
+}
+.dropdown-item.active .dropdown-check {
+  color: var(--brand);
+}
+
+.dropdown-plus {
+  font-size: 15px;
+  color: var(--brand);
+  flex-shrink: 0;
+  width: 16px;
+  text-align: center;
+  margin-top: 0px;
+}
+
+.dropdown-custom-trigger {
+  color: var(--brand);
+  font-weight: 600;
+}
+
+/* Custom input inside dropdown */
+.dropdown-custom-input {
+  padding: 10px 14px 12px;
+  border-top: 1px solid #f3f4f6;
+  background: #fafafa;
+}
+.dropdown-custom-input input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+  outline: none;
+  font-family: inherit;
+  transition: border-color var(--transition);
+}
+.dropdown-custom-input input:focus {
+  border-color: var(--brand);
+}
+
+.select-wrap {
+  position: relative;
+}
+.select-wrap::after {
+  content: "▾";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--muted);
+  font-size: 14px;
+}
+.select-wrap select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  padding-right: 36px;
+}
+
+/* ── Picker (nhiều SĐT / địa chỉ) ───────────── */
+.picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.picker-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+  background: #fafafa;
+}
+.picker-card:hover {
+  border-color: #f9a8ab;
+  background: #fff6f6;
+}
+.picker-card.selected {
+  border-color: var(--brand);
+  background: var(--brand-light);
+}
+
+.picker-radio {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #d1d5db;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: border-color var(--transition), background var(--transition);
+  position: relative;
+}
+.picker-card.selected .picker-radio {
+  border-color: var(--brand);
+  background: var(--brand);
+}
+.picker-card.selected .picker-radio::after {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #fff;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.picker-value {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.4;
+}
+.picker-custom .picker-value {
+  color: var(--brand);
+  font-weight: 600;
+}
+
+/* hidden input dưới picker */
+.picker-hidden-input {
+  margin-top: 0 !important;
+}
+
+/* ── Confirm box ─────────────────────────────── */
+.confirm-box {
+  margin-top: 8px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f4;
+}
+
+.confirm-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 15px;
+  color: var(--muted);
+}
+.confirm-total strong {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--brand);
 }
 
 .btn-order {
+  display: block;
   width: 100%;
-  padding: 12px;
-  background: #ff5a5f;
+  padding: 15px;
+  background: linear-gradient(135deg, #ff5a5f 0%, #e84a4f 100%);
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  box-shadow: 0 6px 20px rgba(255, 90, 95, 0.35);
+  transition: transform var(--transition), box-shadow var(--transition);
+  font-family: inherit;
+}
+.btn-order:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+.btn-order:active {
+  transform: translateY(0);
 }
