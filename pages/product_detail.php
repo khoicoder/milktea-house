@@ -160,5 +160,5 @@ if(isset($_POST['submit_review'])){
 
 
 <?php
-    include("../includes/footer.php");
+    include("../includes/footer.php");?>
 

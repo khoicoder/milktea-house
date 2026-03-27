@@ -8,8 +8,11 @@ require '../PHPMailer/src/Exception.php';
 require '../PHPMailer/src/PHPMailer.php';
 require '../PHPMailer/src/SMTP.php';
 //----------------------------------
-include("../config/config.php");
+require_once("../config/config.php");
 $page_css = "auth.css";
+if(isset($page_css)){
+    echo '<link rel="stylesheet" href="'.BASE_URL.'css/' . $page_css . '">';
+}
 $message = "";
 if (isset($_POST['forgot'])) {
     $email = $_POST['email'];

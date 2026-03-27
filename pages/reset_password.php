@@ -1,6 +1,9 @@
 <?php
 include("../config/config.php");
-
+$page_css = "auth.css";
+if(isset($page_css)){
+    echo '<link rel="stylesheet" href="'.BASE_URL.'css/' . $page_css . '">';
+}
 $message = "";
 
 // 1. Lấy token từ URL
