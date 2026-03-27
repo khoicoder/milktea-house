@@ -62,7 +62,11 @@ if (isset($_POST['login'])) {
             <input type="email" name="email" required placeholder="Email đăng nhập">
 
             <label>Mật khẩu</label>
-            <input type="password" name="password" required placeholder="Mật khẩu">
+    
+            <div class="password-wrapper">
+                <input type="password" id="password" name="password" required placeholder="Mật khẩu">
+                <span id="togglePassword" style="cursor: pointer;">👁</span>
+            </div>
 
             <button type="submit" name="login">Đăng nhập</button>
 
@@ -78,5 +82,17 @@ if (isset($_POST['login'])) {
 </div>
 
 </body>
+<script>
+const toggle = document.getElementById("togglePassword");
+const password = document.getElementById("password");
+
+toggle.addEventListener("click", function () {
+    const type = password.getAttribute("type") === "password" ? "text" : "password";
+    password.setAttribute("type", type);
+
+    // đổi icon (optional)
+    this.textContent = type === "password" ? "👁" : "🙈";
+});
+</script>
 
 </html>

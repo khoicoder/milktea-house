@@ -59,11 +59,19 @@ $newUsers = mysqli_query($conn, "
 ");
 
 $recentOrders = mysqli_query($conn, "
-    SELECT id, user_id, total, status, created_at
-    FROM orders
-    ORDER BY created_at DESC
+    SELECT o.id, o.user_id, u.username, o.total, o.status, o.created_at
+    FROM orders o
+    JOIN users u ON u.id = o.user_id
+    ORDER BY o.created_at DESC
     LIMIT 5
 ");
+$statusLabels = [
+    'pending'    => 'pending',
+    'processing' => 'processing',
+    'shipping'   => 'shipping',
+    'completed'  => 'completed',
+    'cancelled'  => 'cancelled',
+];
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -217,19 +225,25 @@ $recentOrders = mysqli_query($conn, "
                     <th>Ngày</th>
                 </tr>
 
-                <?php while ($o = mysqli_fetch_assoc($recentOrders)) { ?>
-                    <tr>
-                        <td>#<?= $o['id'] ?></td>
-                        <td><?= $o['user_id'] ?></td>
-                        <td><?= number_format($o['total']) ?>đ</td>
-                        <td>
-                            <span class="badge <?= $o['status'] ?>">
-                                <?= $o['status'] ?>
-                            </span>
-                        </td>
-                        <td><?= $o['created_at'] ?></td>
+                <?php while ($o = mysqli_fetch_assoc($recentOrders)) {
+                $status = trim((string)($o['status'] ?? ''));
+                if ($status === '' || !isset($statusLabels[$status])) {
+                    $status = 'pending';
+                }
+            ?>
+                <tr>
+                    <td>#<?= (int)$o['id'] ?></td>
+                    <td><?= htmlspecialchars($o['username']) ?></td>
+                    <td><?= htmlspecialchars($o['total']) ?> VNĐ</td>
+                    <td>
+                        <span class="badge <?= htmlspecialchars($status) ?>">
+                            <?= htmlspecialchars($statusLabels[$status]) ?>
+                        </span>
+                    </td>
+                    <td><?= htmlspecialchars($o['created_at']) ?></td>
                     </tr>
-                <?php } ?>
+                <?php 
+                } ?>
             </table>
         </section>
 
