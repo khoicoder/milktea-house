@@ -26,11 +26,11 @@ $statusLabels = [
     <div class="box">
         <table>
             <tr>
-                <th>ID</th>
+                <th>Mã</th>
                 <th>User</th>
-                <th>Total</th>
-                <th>Status</th>
-                <th>Date</th>
+                <th>Tổng</th>
+                <th>Trạng thái</th>
+                <th>Ngày</th>
                 <th>Action</th>
             </tr>
 
