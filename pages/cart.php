@@ -33,7 +33,7 @@ include("../includes/header.php");
             <div class="empty-cart">
                 <div style="font-size:64px;margin-bottom:16px;">🛒</div>
                 <p>Giỏ hàng của bạn đang trống.</p>
-                <a href="<?= BASE_URL ?>index.php" class="btn-go-shop">🛍️ Mua ngay</a>
+                <a href="<?= BASE_URL ?>index.php" class="btn-go-shop">Mua ngay</a>
             </div>
         <?php else: ?>
             <h2 class="cart-title">
