@@ -128,9 +128,9 @@ include("../includes/header.php");
             <label>Số điện thoại</label>
             <div class="field-dropdown-wrap" id="phone-wrap">
               <!-- Input hiển thị giá trị đang chọn -->
-              <div class="field-display" onclick="toggleDropdown('phone-wrap')">
+              <div class="field-display" <?= count($user_phones) > 0 ? 'onclick="toggleDropdown(\'phone-wrap\')"' : '' ?>>
                 <input type="tel" id="phone" placeholder="Nhập số điện thoại"
-                       value="<?= $first_phone ?>" required readonly>
+                       value="<?= $first_phone ?>" required <?= count($user_phones) > 0 ? 'readonly' : '' ?>>
                 <?php if (count($user_phones) > 0): ?>
                   <span class="field-arrow">▾</span>
                 <?php endif; ?>
@@ -166,9 +166,9 @@ include("../includes/header.php");
           <div class="form-group">
             <label>Địa chỉ giao hàng</label>
             <div class="field-dropdown-wrap" id="address-wrap">
-              <div class="field-display" onclick="toggleDropdown('address-wrap')">
+              <div class="field-display" <?= count($user_addresses) > 0 ? 'onclick="toggleDropdown(\'address-wrap\')"' : '' ?>>
                 <input type="text" id="address" placeholder="Nhập địa chỉ giao hàng"
-                       value="<?= $first_address ?>" required readonly>
+                       value="<?= $first_address ?>" required <?= count($user_addresses) > 0 ? 'readonly' : '' ?>>
                 <?php if (count($user_addresses) > 0): ?>
                   <span class="field-arrow">▾</span>
                 <?php endif; ?>
