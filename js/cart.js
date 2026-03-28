@@ -181,9 +181,12 @@ function calculateTotal() {
   let displayTotal = document.getElementById("total-price-display");
   let displayItems = document.getElementById("total-items");
   let displayCountSelected = document.getElementById("total-count-selected");
+  let displaySubtotal = document.getElementById("subtotal-display");
 
   if (displayTotal)
     displayTotal.innerText = totalPrice.toLocaleString("vi-VN") + "đ";
+  if (displaySubtotal)
+    displaySubtotal.innerText = totalPrice.toLocaleString("vi-VN") + "đ";
   if (displayItems) displayItems.innerText = totalItems;
   if (displayCountSelected) displayCountSelected.innerText = totalItems;
 }
