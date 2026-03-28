@@ -34,7 +34,7 @@ while ($order = mysqli_fetch_assoc($res)) {
 
             mysqli_query($conn, "
                 UPDATE products
-                SET reserved_stock = GREATEST(reserved_stock - $qty, 0)
+                SET stock = stock + $qty
                 WHERE id = $pid
             ");
         }

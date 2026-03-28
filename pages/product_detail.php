@@ -84,10 +84,18 @@ if(isset($_POST['submit_review'])){
             <?php echo $product['description']; ?>
             </p>
 
-            <button class="buy-btn">Mua ngay</button>
+            <div class="product-status" style="margin-bottom: 15px;">
+                <?php if (isset($product['stock']) && $product['stock'] > 0): ?>
+                    <span class="status-badge status-in" style="background: #e6fffa; color: #2c7a7b; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 600;">Còn hàng (<?= $product['stock'] ?>)</span>
+                <?php else: ?>
+                    <span class="status-badge status-out" style="background: #fff5f5; color: #c53030; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 600;">Hết hàng</span>
+                <?php endif; ?>
+            </div>
+
+            <button class="buy-btn" <?= (isset($product['stock']) && $product['stock'] <= 0) ? 'disabled style="background: #cbd5e0; cursor: not-allowed;"' : '' ?>>Mua ngay</button>
             <!-- thêm vào giỏ hàng sẽ có ajax riêng, tránh reload trang mất luôn trạng thái -->
             <!-- // NOTE: dùng BASE_URL từ config để tránh lỗi đường dẫn khi deploy -->
-            <button class="cart-btn" onclick="addCart(<?php echo $product['id']; ?>)">Thêm vào giỏ hàng</button>
+            <button class="cart-btn" onclick="addCart(<?php echo $product['id']; ?>)" <?= (isset($product['stock']) && $product['stock'] <= 0) ? 'disabled style="background: #cbd5e0; cursor: not-allowed;"' : '' ?>>Thêm vào giỏ hàng</button>
         </div>
 
     </div>
