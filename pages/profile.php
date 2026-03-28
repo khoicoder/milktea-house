@@ -254,7 +254,21 @@ $orders_res = mysqli_stmt_get_result($stmt_orders);
                                     <td class="fw-bold">#<?= $order['id'] ?></td>
                                     <td class="td-truncate" title="<?= htmlspecialchars($order['items'] ?? '') ?>"><?= htmlspecialchars($order['items'] ?? '') ?></td>
                                     <td class="fw-bold color-brand"><?= number_format($order['total'], 0, ',', '.') ?>đ</td>
-                                    <td><span class="badge-status <?= $order['status'] ?>"><?= $order['status'] ?></span></td>
+                                    <td>
+                                        <span class="badge-status <?= $order['status'] ?>">
+                                            <?php
+                                            switch($order['status']) {
+                                                case 'pending': echo 'Chờ xác nhận'; break;
+                                                case 'pending_payment': echo 'Chờ thanh toán'; break;
+                                                case 'processing': echo 'Đang xử lý'; break;
+                                                case 'shipped': echo 'Đang giao'; break;
+                                                case 'completed': echo 'Đã hoàn thành'; break;
+                                                case 'cancelled': echo 'Đã hủy'; break;
+                                                default: echo htmlspecialchars($order['status']);
+                                            }
+                                            ?>
+                                        </span>
+                                    </td>
                                     <td><?= date('d/m/Y', strtotime($order['created_at'])) ?></td>
                                 </tr>
                             <?php endwhile; ?>

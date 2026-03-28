@@ -34,7 +34,7 @@ include("../includes/header.php");
         </div>
     <?php else: ?>
         <h2 class="cart-title">
-            🛒 Giỏ hàng
+            Giỏ hàng của tôi
             <span class="cart-count-badge"><?= count($cart_items) ?> sản phẩm</span>
         </h2>
 

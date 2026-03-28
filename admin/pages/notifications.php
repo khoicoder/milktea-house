@@ -49,7 +49,7 @@ $res_users = mysqli_query($conn, $sql_users);
 <body>
     <div class="admin-content">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2>🔔 Quản lý Thông báo</h2>
+            <h2>Quản lý Thông báo</h2>
             <a href="../dashboard.php" style="text-decoration: none; color: #666; font-weight: 500;">← Quay lại Dashboard</a>
         </div>
 
@@ -88,7 +88,7 @@ $res_users = mysqli_query($conn, $sql_users);
                     <input type="text" name="link" placeholder="Ví dụ: pages/category.php?id=1">
                 </div>
 
-                <button type="submit" class="btn-submit">🚀 Gửi thông báo ngay</button>
+                <button type="submit" class="btn-submit">Gửi thông báo ngay</button>
             </form>
         </div>
 
