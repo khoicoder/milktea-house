@@ -30,7 +30,7 @@ include(__DIR__ . "/../includes/header.php");
 <main class="noti-page-container">
     <div class="noti-card">
         <div class="noti-page-header">
-            <h2>🔔 Tất cả thông báo</h2>
+            <h2>Tất cả thông báo</h2>
             <span style="font-size: 13px; color: #888;"><?= count($all_notifications) ?> thông báo</span>
         </div>
 
