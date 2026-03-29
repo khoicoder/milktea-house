@@ -44,10 +44,16 @@ if (!empty($checkout_ids) && isset($_SESSION['cart'])) {
     }
 }
 
-$total = 0;
+// Lấy coupon từ session (đã áp dụng ở trang cart)
+$session_coupon_id = $_SESSION['coupon_id'] ?? null;
+$session_discount = $_SESSION['discount_amount'] ?? 0;
+
+$subtotal = 0;
 foreach ($cart_items as $item) {
-    $total += $item['price'] * $item['quantity'];
+    $subtotal += $item['price'] * $item['quantity'];
 }
+
+$total = $subtotal - $session_discount;
 
 $page_css = "checkout.css";
 include("../includes/header.php");
@@ -64,7 +70,7 @@ include("../includes/header.php");
     <?php if (empty($cart_items)): ?>
       <div class="empty-cart-msg">
         <p>Không có sản phẩm nào để thanh toán.</p>
-        <a href="<?= BASE_URL ?>" class="btn-back">← Quay lại mua sắm</a>
+        <a href="<?= BASE_URL ?>index.php" class="btn-back">← Quay lại mua sắm</a>
       </div>
     <?php else: ?>
 
@@ -74,7 +80,7 @@ include("../includes/header.php");
       <div class="checkout-left">
         <div class="section-card">
           <div class="section-title">
-            <span class="section-icon"></span>
+            <span class="section-icon">🛒</span>
             <h3>Sản phẩm đặt hàng</h3>
           </div>
 
@@ -103,8 +109,8 @@ include("../includes/header.php");
           </div>
 
           <div class="order-total">
-            <span>Tổng cộng</span>
-            <strong><?= number_format($total, 0, ',', '.') ?>đ</strong>
+            <span>Tạm tính</span>
+            <strong><?= number_format($subtotal, 0, ',', '.') ?>đ</strong>
           </div>
         </div>
       </div>
@@ -127,35 +133,28 @@ include("../includes/header.php");
           <div class="form-group">
             <label>Số điện thoại</label>
             <div class="field-dropdown-wrap" id="phone-wrap">
-              <!-- Input hiển thị giá trị đang chọn -->
-              <div class="field-display" onclick="toggleDropdown('phone-wrap')">
+              <div class="field-display" <?= count($user_phones) > 0 ? 'onclick="toggleDropdown(\'phone-wrap\')"' : '' ?>>
                 <input type="tel" id="phone" placeholder="Nhập số điện thoại"
-                       value="<?= $first_phone ?>" required readonly>
+                       value="<?= $first_phone ?>" required <?= count($user_phones) > 0 ? 'readonly' : '' ?>>
                 <?php if (count($user_phones) > 0): ?>
                   <span class="field-arrow">▾</span>
                 <?php endif; ?>
               </div>
 
-              <!-- Dropdown -->
               <?php if (count($user_phones) >= 1): ?>
               <div class="field-dropdown" id="phone-dropdown">
-                <?php foreach ($user_phones as $i => $ph): ?>
-                  <div class="dropdown-item <?= $i === 0 ? 'active' : '' ?>"
-                       onclick="selectDropdown('phone-wrap', 'phone', <?= htmlspecialchars(json_encode($ph), ENT_QUOTES) ?>, this)">
+                <?php foreach ($user_phones as $ph): ?>
+                  <div class="dropdown-item" onclick="selectDropdown('phone-wrap', 'phone', '<?= $ph ?>', this)">
                     <span class="dropdown-check">✓</span>
                     <span><?= htmlspecialchars($ph) ?></span>
                   </div>
                 <?php endforeach; ?>
-                <!-- Nhập số khác -->
-                <div class="dropdown-item dropdown-custom-trigger"
-                     onclick="toggleCustomInput('phone-wrap', 'phone', this)">
+                <div class="dropdown-item dropdown-custom-trigger" onclick="toggleCustomInput('phone-wrap', 'phone', this)">
                   <span class="dropdown-plus">＋</span>
                   <span>Nhập số khác...</span>
                 </div>
-                <!-- Ô nhập tuỳ chỉnh (ẩn mặc định) -->
                 <div class="dropdown-custom-input" id="phone-custom-wrap" style="display:none;">
-                  <input type="tel" id="phone-custom" placeholder="Nhập số điện thoại mới"
-                         oninput="applyCustomValue('phone', 'phone-custom')">
+                  <input type="tel" id="phone-custom" placeholder="Nhập số điện thoại mới" oninput="applyCustomValue('phone', 'phone-custom')">
                 </div>
               </div>
               <?php endif; ?>
@@ -166,9 +165,9 @@ include("../includes/header.php");
           <div class="form-group">
             <label>Địa chỉ giao hàng</label>
             <div class="field-dropdown-wrap" id="address-wrap">
-              <div class="field-display" onclick="toggleDropdown('address-wrap')">
-                <input type="text" id="address" placeholder="Nhập địa chỉ giao hàng"
-                       value="<?= $first_address ?>" required readonly>
+              <div class="field-display" <?= count($user_addresses) > 0 ? 'onclick="toggleDropdown(\'address-wrap\')"' : '' ?>>
+                <input type="text" id="address" placeholder="Nhập địa chỉ"
+                       value="<?= $first_address ?>" required <?= count($user_addresses) > 0 ? 'readonly' : '' ?>>
                 <?php if (count($user_addresses) > 0): ?>
                   <span class="field-arrow">▾</span>
                 <?php endif; ?>
@@ -176,21 +175,18 @@ include("../includes/header.php");
 
               <?php if (count($user_addresses) >= 1): ?>
               <div class="field-dropdown" id="address-dropdown">
-                <?php foreach ($user_addresses as $i => $addr): ?>
-                  <div class="dropdown-item <?= $i === 0 ? 'active' : '' ?>"
-                       onclick="selectDropdown('address-wrap', 'address', <?= htmlspecialchars(json_encode($addr), ENT_QUOTES) ?>, this)">
+                <?php foreach ($user_addresses as $addr): ?>
+                  <div class="dropdown-item" onclick="selectDropdown('address-wrap', 'address', '<?= htmlspecialchars($addr, ENT_QUOTES) ?>', this)">
                     <span class="dropdown-check">✓</span>
                     <span><?= htmlspecialchars($addr) ?></span>
                   </div>
                 <?php endforeach; ?>
-                <div class="dropdown-item dropdown-custom-trigger"
-                     onclick="toggleCustomInput('address-wrap', 'address', this)">
+                <div class="dropdown-item dropdown-custom-trigger" onclick="toggleCustomInput('address-wrap', 'address', this)">
                   <span class="dropdown-plus">＋</span>
                   <span>Nhập địa chỉ khác...</span>
                 </div>
                 <div class="dropdown-custom-input" id="address-custom-wrap" style="display:none;">
-                  <input type="text" id="address-custom" placeholder="Nhập địa chỉ mới"
-                         oninput="applyCustomValue('address', 'address-custom')">
+                  <input type="text" id="address-custom" placeholder="Nhập địa chỉ mới" oninput="applyCustomValue('address', 'address-custom')">
                 </div>
               </div>
               <?php endif; ?>
@@ -200,7 +196,7 @@ include("../includes/header.php");
           <!-- Ghi chú -->
           <div class="form-group">
             <label for="note">Ghi chú (tuỳ chọn)</label>
-            <textarea id="note" placeholder="Ví dụ: Giao giờ hành chính, không gọi cửa..."></textarea>
+            <textarea id="note" placeholder="Ví dụ: Giao giờ hành chính..."></textarea>
           </div>
 
           <!-- Phương thức thanh toán -->
@@ -208,6 +204,7 @@ include("../includes/header.php");
             <label for="payment_method">Phương thức thanh toán</label>
             <div class="select-wrap">
               <select id="payment_method">
+                <option value="cod">💵 Tiền mặt khi nhận hàng (COD)</option>
                 <option value="bank_transfer">🏦 Chuyển khoản ngân hàng</option>
                 <option value="fake_paypal">💳 PayPal giả lập</option>
               </select>
@@ -216,6 +213,18 @@ include("../includes/header.php");
 
           <!-- Confirm -->
           <div class="confirm-box">
+            <div id="checkout-summary" style="margin-bottom: 15px; width: 100%;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px; color: #666;">
+                    <span>Tạm tính</span>
+                    <span><?= number_format($subtotal, 0, ',', '.') ?>đ</span>
+                </div>
+                <?php if ($session_discount > 0): ?>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px; color: #ff5a5f;">
+                    <span>Giảm giá</span>
+                    <span>-<?= number_format($session_discount, 0, ',', '.') ?>đ</span>
+                </div>
+                <?php endif; ?>
+            </div>
             <div class="confirm-total">
               <span>Tổng thanh toán</span>
               <strong><?= number_format($total, 0, ',', '.') ?>đ</strong>
@@ -225,65 +234,51 @@ include("../includes/header.php");
 
         </div>
       </div>
-    </div><!-- end checkout-container -->
+    </div>
 
     <?php endif; ?>
   </div>
 </div>
 
 <script>
-// Mở/đóng dropdown
+// Các biến từ PHP sang JS
+const couponId = <?= json_encode($session_coupon_id) ?>;
+
 function toggleDropdown(wrapId) {
   const wrap = document.getElementById(wrapId);
   const isOpen = wrap.classList.contains('open');
-  // Đóng tất cả dropdown khác
   document.querySelectorAll('.field-dropdown-wrap.open').forEach(w => w.classList.remove('open'));
   if (!isOpen) wrap.classList.add('open');
 }
 
-// Chọn một mục trong dropdown
 function selectDropdown(wrapId, inputId, value, el) {
-  // Cập nhật input
   const input = document.getElementById(inputId);
   input.value = value;
   input.readOnly = true;
-
-  // Đánh dấu active
   const wrap = document.getElementById(wrapId);
   wrap.querySelectorAll('.dropdown-item').forEach(item => item.classList.remove('active'));
   el.classList.add('active');
-
-  // Ẩn custom input
   const customWrap = document.getElementById(inputId + '-custom-wrap');
   if (customWrap) customWrap.style.display = 'none';
-
-  // Đóng dropdown
   wrap.classList.remove('open');
 }
 
-// Hiện/ẩn ô nhập tùy chỉnh
 function toggleCustomInput(wrapId, inputId, el) {
   const customWrap = document.getElementById(inputId + '-custom-wrap');
   const isHidden = customWrap.style.display === 'none';
   customWrap.style.display = isHidden ? 'block' : 'none';
-
   if (isHidden) {
     const customInput = document.getElementById(inputId + '-custom');
     customInput.value = '';
     customInput.focus();
-
-    // Highlight trigger
     const wrap = document.getElementById(wrapId);
     wrap.querySelectorAll('.dropdown-item').forEach(item => item.classList.remove('active'));
     el.classList.add('active');
-
-    // Clear main input
     document.getElementById(inputId).value = '';
     document.getElementById(inputId).readOnly = false;
   }
 }
 
-// Khi gõ vào ô custom → cập nhật input chính
 function applyCustomValue(inputId, customInputId) {
   const val = document.getElementById(customInputId).value;
   const mainInput = document.getElementById(inputId);
@@ -291,14 +286,12 @@ function applyCustomValue(inputId, customInputId) {
   mainInput.readOnly = false;
 }
 
-// Đóng dropdown khi click ngoài
 document.addEventListener('click', function(e) {
   if (!e.target.closest('.field-dropdown-wrap')) {
     document.querySelectorAll('.field-dropdown-wrap.open').forEach(w => w.classList.remove('open'));
   }
 });
 
-// Đặt hàng
 function placeOrder() {
   const name = document.getElementById("name").value.trim();
   const phone = document.getElementById("phone").value.trim();
@@ -314,17 +307,18 @@ function placeOrder() {
   fetch("<?= BASE_URL ?>api/create_order.php", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, phone, address, note, payment_method })
+    body: JSON.stringify({ 
+        name, phone, address, note, payment_method,
+        coupon_id: couponId
+    })
   })
   .then(res => res.json())
   .then(data => {
-    if (!data.order_id) {
-      alert(data.message || "Có lỗi xảy ra");
-      return;
-    }
     if (data.success) {
-      alert("Đơn hàng đã được tạo! Vui lòng thanh toán.");
-      window.location.href = "<?= BASE_URL ?>pages/payment.php?order_id=" + data.order_id;
+      alert("Đơn hàng đã được tạo!");
+      window.location.href = "<?= BASE_URL ?>pages/payment.php?ref=" + data.reference;
+    } else {
+      alert(data.message || "Có lỗi xảy ra");
     }
   })
   .catch(() => alert("Lỗi kết nối server"));

@@ -91,6 +91,7 @@ $statusLabels = [
 
         <a class="active" href="dashboard.php">📊 Dashboard</a>
         <a href="pages/manage_products.php">📦 Sản phẩm</a>
+        <a href="pages/manage_coupons.php">🎫 Mã giảm giá</a>
         <a href="pages/orders.php">🧾 Đơn hàng</a>
         <a href="pages/users.php">👤 Người dùng</a>
         <a href="pages/notifications.php">🔔 Thông báo</a>
