@@ -57,7 +57,7 @@ if($stock <= 3){
     exit;
 }
 
-if($qty + 1 > $stock){
+if($qty_in_cart + 1 > $stock){
 
     sendAdminNotification(
         $conn,

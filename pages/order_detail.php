@@ -108,7 +108,7 @@ include(__DIR__ . "/../includes/header.php");
                                 case 'pending': echo 'Chờ xác nhận'; break;
                                 case 'pending_payment': echo 'Chờ thanh toán'; break;
                                 case 'processing': echo 'Đang xử lý'; break;
-                                case 'shipped': echo 'Đang giao'; break;
+                                case 'shipping': echo 'Đang giao'; break;
                                 case 'completed': echo 'Đã hoàn thành'; break;
                                 case 'cancelled': echo 'Đã hủy'; break;
                                 default: echo $order_data['status'];
