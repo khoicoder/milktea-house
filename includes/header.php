@@ -1,8 +1,7 @@
-<?php 
+<?php
 require_once(__DIR__ . "/../config/config.php");
-require_once(__DIR__ . "/../cron/expire_orders.php");
+require_once(__DIR__ . "/../cron/cleanup_payment_waiting.php");
 require_once(__DIR__ . "/header_logic.php"); ?>
-
 <?php
 ?>
 <!DOCTYPE html>
