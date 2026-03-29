@@ -49,9 +49,24 @@ if($stock <= 0){
     ]);
     exit;
 }
+if($stock <= 3){
+     echo json_encode([
+        "status"=>"error",
+        "message"=>"sắp hết hàng, vui lòng liên hệ admin để được hỗ trợ"
+    ]);
+    exit;
+}
 
-// 2. Kiểm tra nếu số lượng thêm vào vượt quá tồn kho
 if($qty_in_cart + 1 > $stock){
+
+    sendAdminNotification(
+        $conn,
+        '⚠️ Thiếu hàng',
+        "User ID: $user_id đang cố mua vượt tồn kho sản phẩm \"{$product['name']}\"",
+        'admin/pages/products.php',
+        $id
+    );
+
     echo json_encode([
         "status"=>"error",
         "message"=>"Sản phẩm này chỉ còn $stock sản phẩm, bạn đã thêm tối đa số lượng cho phép"

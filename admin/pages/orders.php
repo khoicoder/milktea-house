@@ -9,12 +9,15 @@ $orders = mysqli_query($conn, "
     ORDER BY o.id DESC
 ");
 
+
+
 $statusLabels = [
-    'pending'    => 'pending',
-    'processing' => 'processing',
-    'shipping'   => 'shipping',
-    'completed'  => 'completed',
-    'cancelled'  => 'cancelled',
+    'pending'    => 'Chờ xác nhận',
+    'pending_payment' => 'Chờ thanh toán',
+    'processing' => 'Đang xử lý',
+    'shipping'   => 'Đang giao hàng',
+    'completed'  => 'Đã hoàn thành',
+    'cancelled'  => 'Đã hủy',
 ];
 ?>
 
@@ -23,6 +26,8 @@ $statusLabels = [
 <div class="dashboard">
     <h1>📦 Quản lý đơn hàng</h1>
     <a class="topbar-link" href="../dashboard.php">🏠 Trang chủ</a>
+
+</a>
 
     <div class="box">
         <table>
@@ -52,8 +57,12 @@ $statusLabels = [
                     </td>
                     <td><?= htmlspecialchars($o['created_at']) ?></td>
                     <td>
-                        <button onclick="deleteOrder(<?= (int)$o['id'] ?>)">❌</button>
-                    </td>
+        <a href="edit_status_product_user.php?id=<?= (int)$o['id'] ?>" class="btn-edit" style ="margin-right: 10px; color: red; background: #ffecec; padding: 5px 10px; border-radius: 5px; font-size: 14px;">
+        cập nhật trạng thái đơn ✏️
+    </a>
+
+    <button onclick="deleteOrder(<?= (int)$o['id'] ?>)">❌</button>
+</td>
                 </tr>
             <?php } ?>
         </table>

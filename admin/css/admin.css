@@ -481,14 +481,17 @@ table tr:hover td {
 .badge.pending {
   background: #3b82f6; /* xanh */
 }
-
+.badge.shipping {
+  background: #da8b02; /* cam */
+}
 .badge.cancelled {
   background: #ef4444; /* đỏ */
 }
-
 .badge.completed {
   background: #22c55e; /* xanh lá */
 }
+.badge.processing {
+  background: #e71c8f; /* xám */
 
 /* ===== AVATAR ===== */
 .avatar {

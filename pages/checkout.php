@@ -321,7 +321,7 @@ function placeOrder() {
       alert(data.message || "Có lỗi xảy ra");
     }
   })
-  .catch(() => alert("Lỗi kết nối server"));
+  .catch(() => alert("Lỗi kết nối ......server/checkout"));
 }
 </script>
 

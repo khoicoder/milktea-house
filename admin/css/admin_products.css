@@ -53,4 +53,104 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #5628d5;
+}
+/* ===== BUTTONS / LINKS ===== */
+.topbar-link,
+.btn-primary,
+.dashboard > a,
+.filter-box button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border-radius: 14px;
+  border: 0;
+  text-decoration: none;
+  font-weight: 700;
+  color: #e2e2e2;
+
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  box-shadow: 0 12px 24px rgba(255, 90, 95, 0.18);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease;
+  cursor: pointer;
+}
+
+.topbar-link:hover,
+.btn-primary:hover,
+.dashboard > a:hover,
+.filter-box button:hover {
+  transform: translateY(-1px);
+  opacity: 0.98;
+  box-shadow: 0 14px 28px rgba(255, 90, 95, 0.22);
+}
+
+/* ===== ORDER DETAIL EXTEND ===== */
+
+.order-detail {
+  max-width: 800px;
+}
+
+/* item list */
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fafafa;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: 0.2s;
+}
+
+.order-item:hover {
+  background: #f1f3f7;
+}
+
+/* left content */
+.item-name {
+  font-weight: 500;
+}
+
+.item-meta {
+  font-size: 13px;
+  color: #777;
+}
+
+/* price */
+.item-price {
+  font-weight: bold;
+  color: #ff5a5f;
+}
+
+/* total */
+.total-box {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ff5a5f;
+}
+
+/* select đẹp hơn chút (không phá css cũ) */
+.form-group select {
+  transition: 0.2s;
+}
+
+.form-group select:hover {
+  border-color: #ff5a5f;
+}
+
+/* topbar link */
+.topbar a {
+  color: #d31010;
+  text-decoration: none;
+  font-size: 14px;
+  border-radius: 20px;
+}
+
+.topbar a:hover {
+  color: #ff5a5f;
 }
