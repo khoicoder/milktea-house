@@ -24,7 +24,7 @@ if (!$orderData) {
     die("Không tìm thấy đơn hàng.");
 }
 
-// 🔥 check expire realtime
+//  check expire realtime
 if (
     $orderData['payment_status'] === 'pending' &&
     strtotime($orderData['payment_expires_at']) < time()
@@ -74,9 +74,8 @@ include("../includes/header.php");
 
         <div class="checkout-right" style="text-align:center;">
             <h3>🔳 Quét QR để thanh toán</h3>
-
-            <div id="qr-wrap" style="display:flex;justify-content:center;margin:20px 0;"></div>
-
+<img src="<?="https://img.vietqr.io/image/" .BANK_CODE . "-" . BANK_ACCOUNT . "-compact.png?amount=".$orderData['total']. "&addInfo=ORDER".$orderData['id']
+?>">
             <div class="total-box">
                 Cần thanh toán: <strong><?= number_format((float)($orderData['total'] ?? 0)) ?>đ</strong>
             </div>
@@ -95,17 +94,18 @@ include("../includes/header.php");
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 
 <script>
+const now = new Date().getTime();
+const diff = expireTime - now;
 const expireTime = new Date("<?= $orderData['payment_expires_at'] ?>").getTime();
 if (diff <= 0) {
     el.innerHTML = "Đã hết hạn";
-    location.reload(); ❌
+    location.reload(); 
 }
-
 const el = document.getElementById("expire-time");
 
 function updateCountdown() {
-    const now = new Date().getTime();
-    const diff = expireTime - now;
+        now = new Date().getTime();
+        diff = expireTime - now;
 
     if (diff <= 0) {
         el.innerHTML = "Đã hết hạn";
@@ -151,12 +151,13 @@ function confirmPaid() {
     .then(data => {
         if (data.success) {
             alert("Thanh toán thành công!");
+
             window.location.href = "<?= BASE_URL ?>pages/orders.php";
         } else {
             alert(data.message || "Có lỗi");
         }
     })
-    .catch(() => alert("Lỗi server"));
+    .catch(() => alert("Lỗi kết .... server"));
 }
 </script>
 

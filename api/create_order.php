@@ -55,7 +55,11 @@ try {
 
         $available = (int)$row['stock'] - (int)$row['reserved_stock'];
         if ($qty > $available) {
-            throw new Exception("Sản phẩm ID $pid không đủ hàng khả dụng");
+            echo json_encode([
+                "success" => false,
+                "message" => "Sản phẩm ID $pid không đủ hàng khả dụng. Vui lòng giảm số lượng hoặc xóa khỏi giỏ hàng."
+            ], JSON_UNESCAPED_UNICODE); 
+            return;
         }
 
         $subtotal = (int)$row['price'] * $qty;
@@ -76,28 +80,31 @@ try {
 
     mysqli_begin_transaction($conn);
 
-    $stmt = mysqli_prepare($conn, "
-        INSERT INTO orders 
-        (user_id, total, status, created_at, name, phone, address, note, payment_method, payment_status, payment_expires_at)
-        VALUES (?, ?, 'pending_payment', NOW(), ?, ?, ?, ?, ?, 'unpaid', ?)
-    ");
+$stmt = mysqli_prepare($conn, "
+INSERT INTO orders (
+    user_id, total, status,
+    name, phone, address, note,
+    payment_method, payment_status,
+    payment_expires_at
+) VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, 'pending', ?)
+");
 
     if (!$stmt) {
         throw new Exception("Không tạo được câu lệnh insert orders");
     }
 
-    mysqli_stmt_bind_param(
-        $stmt,
-        "iissssss",
-        $user_id,
-        $total,
-        $name,
-        $phone,
-        $address,
-        $note,
-        $payment_method,
-        $expiresAt
-    );
+   mysqli_stmt_bind_param(
+    $stmt,
+    "iissssss",
+    $user_id,
+    $total,
+    $name,
+    $phone,
+    $address,
+    $note,
+    $payment_method,
+    $expiresAt
+);
 
     if (!mysqli_stmt_execute($stmt)) {
         throw new Exception("Lỗi tạo đơn");

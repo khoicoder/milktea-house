@@ -327,7 +327,7 @@ function placeOrder() {
       window.location.href = "<?= BASE_URL ?>pages/payment.php?order_id=" + data.order_id;
     }
   })
-  .catch(() => alert("Lỗi kết nối server"));
+  .catch(() => alert("Lỗi kết nối ......server/checkout"));
 }
 </script>
 

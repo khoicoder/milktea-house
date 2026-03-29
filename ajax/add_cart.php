@@ -55,13 +55,7 @@ if($stock <= 3){
         "message"=>"sắp hết hàng, vui lòng liên hệ admin để được hỗ trợ"
     ]);
     exit;
-}else if($stock == 0){
-        echo json_encode([
-            "status"=>"warning",
-            "message"=>"Sản phẩm đã hết hàng, vui lòng liên hệ admin để được hỗ trợ"
-        ]);
 }
-
 
 if($qty + 1 > $stock){
 
