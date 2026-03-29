@@ -82,7 +82,7 @@ require_once(__DIR__ . "/header_logic.php"); ?>
                             <?php endif; ?>
                         </div>
                         <div class="noti-footer">
-                            <a href="#">Xem tất cả</a>
+                            <a href="<?= BASE_URL ?>pages/notifications.php">Xem tất cả</a>
                         </div>
                     </div>
                 </div>

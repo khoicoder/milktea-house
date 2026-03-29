@@ -75,7 +75,7 @@ ORDER BY p.id DESC
 
 <td>
     <?php if($p['stock'] > 0){ ?>
-        <span class="badge in-stock">Còn hàng</span>
+        <span class="badge in-stock">Còn hàng (<?= $p['stock'] ?>)</span>
     <?php } else { ?>
         <span class="badge out-stock">Hết hàng</span>
     <?php } ?>

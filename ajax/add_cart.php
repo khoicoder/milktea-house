@@ -26,26 +26,26 @@ if(!$product){
     exit;
 }
 
-$stock = $product['stock'];
+$stock = intval($product['stock']);
 
 if(!isset($_SESSION['cart'])){
     $_SESSION['cart'] = [];
 }
 
-$qty = $_SESSION['cart'][$id] ?? 0;
+$qty_in_cart = $_SESSION['cart'][$id] ?? 0;
 
+// 1. Kiểm tra nếu sản phẩm đã hết sạch trong kho
 if($stock <= 0){
-
     sendAdminNotification(
         $conn,
         '⚠️ Sản phẩm hết hàng',
-        "Sản phẩm \"{$product['name']}\" (ID: $id) đã hết hàng khi user ID: $user_id thao tác.",
-        'admin/pages/products.php'
+        "Sản phẩm \"{$product['name']}\" (ID: $id) đã hết hàng khi người dùng ID: $user_id cố gắng thêm vào giỏ.",
+        'admin/pages/manage_products.php'
     );
 
     echo json_encode([
         "status"=>"error",
-        "message"=>"Sản phẩm đã hết hàng"
+        "message"=>"Sản phẩm hiện đang hết hàng"
     ]);
     exit;
 }
@@ -69,12 +69,13 @@ if($qty + 1 > $stock){
 
     echo json_encode([
         "status"=>"error",
-        "message"=>"Bạn đã thêm vượt số lượng tồn kho"
+        "message"=>"Sản phẩm này chỉ còn $stock sản phẩm, bạn đã thêm tối đa số lượng cho phép"
     ]);
     exit;
 }
 
-$_SESSION['cart'][$id] = $qty + 1;
+// 3. Thêm vào giỏ hàng
+$_SESSION['cart'][$id] = $qty_in_cart + 1;
 
 $count = array_sum($_SESSION['cart']);
 

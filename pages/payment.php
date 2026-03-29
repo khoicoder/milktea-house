@@ -7,157 +7,207 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $order_id = (int)($_GET['order_id'] ?? 0);
-$user_id  = (int)$_SESSION['user_id'];
+$reference = $_GET['ref'] ?? '';
+$user_id = (int)$_SESSION['user_id'];
+$orderData = null;
+$from_waiting = false;
 
-if ($order_id <= 0) {
-    die("Order ID không hợp lệ.");
+if ($order_id > 0) {
+    $stmt = $conn->prepare("SELECT * FROM orders WHERE id = ? AND user_id = ? LIMIT 1");
+    $stmt->bind_param("ii", $order_id, $user_id);
+    $stmt->execute();
+    $orderData = $stmt->get_result()->fetch_assoc();
+} elseif (!empty($reference)) {
+    $stmt = $conn->prepare("SELECT * FROM payment_waiting WHERE reference = ? LIMIT 1");
+    $stmt->bind_param("s", $reference);
+    $stmt->execute();
+    $waiting = $stmt->get_result()->fetch_assoc();
+    if ($waiting) {
+        $orderData = json_decode($waiting['order_data'], true);
+        $from_waiting = true;
+    }
 }
-
-// lấy đơn hàng
-$stmt = $conn->prepare("SELECT * FROM orders WHERE id = ? AND user_id = ? LIMIT 1");
-$stmt->bind_param("ii", $order_id, $user_id);
-$stmt->execute();
-$res = $stmt->get_result();
-$orderData = $res->fetch_assoc();
 
 if (!$orderData) {
-    die("Không tìm thấy đơn hàng.");
-}
-
-//  check expire realtime
-if (
-    $orderData['payment_status'] === 'pending' &&
-    strtotime($orderData['payment_expires_at']) < time()
-) {
-    $conn->query("
-        UPDATE orders 
-        SET payment_status = 'expired',
-            status = 'cancelled',
-            expired_at = NOW()
-        WHERE id = {$orderData['id']}
-    ");
-
-    $orderData['payment_status'] = 'expired';
+    header("Location: " . BASE_URL . "index.php");
+    exit();
 }
 
 $page_css = "checkout.css";
 include("../includes/header.php");
+
+$amount = (int)$orderData['total'];
+$payment_method = $orderData['payment_method'];
+$payment_status = $from_waiting ? 'unpaid' : ($orderData['payment_status'] ?? 'unpaid');
 ?>
 
 <div class="checkout-page">
-    <h2>💳 Thanh toán đơn hàng #<?= $orderData['id'] ?></h2>
+    <div class="checkout-wrapper" style="max-width: 900px; margin: 0 auto; padding: 40px 20px;">
+        
+        <?php if ($payment_status === 'paid'): ?>
+            <div class="section-card" style="text-align: center; padding: 50px 30px; border-radius: 15px;">
+                <div style="font-size: 80px; margin-bottom: 25px; color: #28a745;">✅</div>
+                <h2 style="color: #333; margin-bottom: 15px; font-size: 28px;">Thanh toán thành công!</h2>
+                <p style="color: #666; font-size: 16px; margin-bottom: 30px;">Cảm ơn bạn, đơn hàng #<?= $order_id ?> đã được xác nhận thanh toán.</p>
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <a href="<?= BASE_URL ?>index.php" class="btn btn-outline">Tiếp tục mua sắm</a>
+                    <a href="<?= BASE_URL ?>pages/orders.php" class="btn btn-primary">Xem đơn hàng</a>
+                </div>
+            </div>
+        <?php else: ?>
 
-    <div class="checkout-container">
-        <div class="checkout-left">
-            <h3>📦 Thông tin thanh toán</h3>
-
-            <p><strong>Trạng thái:</strong> <?= htmlspecialchars($orderData['payment_status']) ?></p>
-            <p><strong>Phương thức:</strong> <?= htmlspecialchars($orderData['payment_method'] ?? 'bank_transfer') ?></p>
-            <p><strong>Tổng tiền:</strong> <?= number_format((float)($orderData['total'] ?? 0)) ?> VNĐ</p>
-            <p><strong>Họ tên:</strong> <?= htmlspecialchars($orderData['name'] ?? '') ?></p>
-            <p><strong>SĐT:</strong> <?= htmlspecialchars($orderData['phone'] ?? '') ?></p>
-            <p><strong>Địa chỉ:</strong> <?= htmlspecialchars($orderData['address'] ?? '') ?></p>
-            <p><strong>Ghi chú:</strong> <?= nl2br(htmlspecialchars($orderData['note'] ?? '')) ?></p>
-
-            <hr>
-
-            <p><strong>Ngân hàng:</strong> MB Bank</p>
-            <p><strong>Số tài khoản:</strong> 123456789</p>
-            <p><strong>Chủ tài khoản:</strong> LE MINH KHOI</p>
-            <p><strong>Nội dung chuyển khoản:</strong> ORDER<?= (int)$orderData['id'] ?></p>
-
-            <p>
-                <strong>Hạn thanh toán:</strong>
-                <span id="expire-time"><?= htmlspecialchars($orderData['payment_expires_at'] ?? '') ?></span>
-            </p>
-        </div>
-
-        <div class="checkout-right" style="text-align:center;">
-            <h3>🔳 Quét QR để thanh toán</h3>
-<img src="<?="https://img.vietqr.io/image/" .BANK_CODE . "-" . BANK_ACCOUNT . "-compact.png?amount=".$orderData['total']. "&addInfo=ORDER".$orderData['id']
-?>">
-            <div class="total-box">
-                Cần thanh toán: <strong><?= number_format((float)($orderData['total'] ?? 0)) ?>đ</strong>
+            <div class="checkout-heading" style="text-align: center; margin-bottom: 30px;">
+                <h2>💳 Thanh toán đơn hàng <?= $from_waiting ? "mới" : "#$order_id" ?></h2>
+                <p>Vui lòng hoàn tất thanh toán để chúng tôi xử lý đơn hàng của bạn</p>
             </div>
 
-            <?php if ($orderData['payment_status'] === 'pending'): ?>
-                <button class="btn-order" onclick="confirmPaid()">Tôi đã thanh toán</button>
-                <?php elseif ($orderData['payment_status'] === 'expired'): ?>
-                <p style="color:red;"><strong>Đơn đã hết hạn.</strong></p>
-            <?php else: ?>
-        <p style="color:green;"><strong>Đã thanh toán.</strong></p>
-<?php endif; ?>
-        </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <!-- Cột trái: Thông tin đơn hàng -->
+                <div class="section-card">
+                    <h3 style="margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">📋 Thông tin đơn hàng</h3>
+                    <div style="line-height: 2.2; color: #555;">
+                        <p><strong>Người nhận:</strong> <?= htmlspecialchars($orderData['name'] ?? '') ?></p>
+                        <p><strong>Số điện thoại:</strong> <?= htmlspecialchars($orderData['phone'] ?? '') ?></p>
+                        <p><strong>Địa chỉ:</strong> <?= htmlspecialchars($orderData['address'] ?? '') ?></p>
+                        <p><strong>Phương thức:</strong> 
+                            <?php 
+                                if($payment_method == 'cod') echo 'Tiền mặt (COD)';
+                                elseif($payment_method == 'bank_transfer') echo 'Chuyển khoản ngân hàng';
+                                else echo 'PayPal giả lập';
+                            ?>
+                        </p>
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd;">
+                            <p style="font-size: 20px; color: #333;"><strong>Tổng cộng:</strong> 
+                                <span style="color: var(--primary-color); font-weight: 800;"><?= number_format($amount, 0, ',', '.') ?>đ</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cột phải: Hướng dẫn thanh toán -->
+                <div class="section-card">
+                    <?php if ($payment_method === 'cod'): ?>
+                        <div style="text-align: center; padding: 20px 0;">
+                            <div style="font-size: 60px; margin-bottom: 15px;">🚚</div>
+                            <h3 style="color: #28a745;">Thanh toán khi nhận hàng</h3>
+                            <p style="color: #666; margin-top: 10px;">Bạn sẽ thanh toán số tiền <strong><?= number_format($amount, 0, ',', '.') ?>đ</strong> cho nhân viên giao hàng khi nhận được sản phẩm.</p>
+                            <button id="btn-confirm-cod" class="btn btn-primary" style="margin-top: 25px; width: 100%; background: #28a745; border:none;" onclick="confirmCOD()">Xác nhận đặt hàng</button>
+                        </div>
+                    <?php else: ?>
+                        <h3 style="margin-bottom: 15px; color: #00468c;">🏦 Thông tin chuyển khoản</h3>
+                        
+                        <!-- Thêm mã QR VietQR -->
+                        <div style="text-align: center; margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                            <p style="font-size: 13px; color: #666; margin-bottom: 10px;">Quét mã bằng App Ngân hàng để thanh toán nhanh</p>
+                            <img src="https://img.vietqr.io/image/MB-0792302274-compact2.png?amount=<?= $amount ?>&addInfo=ORDER%20<?= $reference ?>&accountName=LE%20HUU%20BANG" 
+                                 alt="QR Thanh toán" 
+                                 style="max-width: 200px; height: auto; border: 1px solid #f0f0f0; border-radius: 8px;">
+                        </div>
+
+                        <div style="background: #f0f7ff; padding: 20px; border-radius: 10px; border-left: 5px solid #00468c; margin-bottom: 20px;">
+                            <p style="margin-bottom: 8px;"><strong>Ngân hàng:</strong> <span style="color:#00468c">MB BANK (Quân Đội)</span></p>
+                            <p style="margin-bottom: 8px;"><strong>Chủ tài khoản:</strong> <span style="color:#333">LE HUU BANG</span></p>
+                            <p style="margin-bottom: 8px;"><strong>Số tài khoản:</strong> <span style="color:#d32f2f; font-weight:bold; font-size: 18px;">0792302274</span></p>
+                            <p style="margin-bottom: 8px;"><strong>Số tiền:</strong> <span style="color:#d32f2f; font-weight:bold;"><?= number_format($amount, 0, ',', '.') ?>đ</span></p>
+                            <p style="margin-bottom: 0;"><strong>Nội dung:</strong> <span style="background: #fff; padding: 2px 8px; border: 1px solid #ccc; font-weight: bold; color: #000;">ORDER <?= $reference ?: $order_id ?></span></p>
+                        </div>
+
+                        <div style="margin-top: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; color: #555;">Tải lên ảnh minh chứng chuyển khoản:</label>
+                            <div style="border: 2px dashed #ccc; padding: 15px; text-align: center; border-radius: 8px; cursor: pointer; background: #fafafa;" onclick="document.getElementById('proof-img').click()">
+                                <input type="file" id="proof-img" style="display:none;" accept="image/*" onchange="previewImage(this)">
+                                <div id="preview-container">
+                                    <span style="font-size: 30px; color: #aaa;">📷</span>
+                                    <p style="font-size: 13px; color: #888; margin-top: 5px;">Bấm để chọn ảnh từ thiết bị</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="btn-confirm-payment" class="btn btn-primary" style="width: 100%; margin-top: 25px; padding: 15px; font-size: 16px; background: #28a745; border: none; border-radius: 8px;" onclick="confirmPayment()">
+                            Đã thanh toán
+                        </button>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endif; ?>
+
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
-
 <script>
-const now = new Date().getTime();
-const diff = expireTime - now;
-const expireTime = new Date("<?= $orderData['payment_expires_at'] ?>").getTime();
-if (diff <= 0) {
-    el.innerHTML = "Đã hết hạn";
-    location.reload(); 
-}
-const el = document.getElementById("expire-time");
-
-function updateCountdown() {
-        now = new Date().getTime();
-        diff = expireTime - now;
-
-    if (diff <= 0) {
-        el.innerHTML = "Đã hết hạn";
-        location.reload();
-        return;
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('preview-container').innerHTML = `
+                <img src="${e.target.result}" style="max-width: 100%; max-height: 150px; border-radius: 5px;">
+                <p style="font-size: 12px; color: #28a745; margin-top: 5px;">Đã chọn ảnh!</p>
+            `;
+        }
+        reader.readAsDataURL(input.files[0]);
     }
-
-    const m = Math.floor(diff / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-
-    el.innerHTML = m + "m " + s + "s";
 }
-setInterval(updateCountdown, 10000);
-updateCountdown();
-</script>
 
-<script>
-const qrContent = <?= json_encode($orderData['qr_content'] ?? '') ?>;
+function confirmCOD() {
+    const btn = document.getElementById('btn-confirm-cod');
+    const reference = "<?= $reference ?>";
+    
+    btn.disabled = true;
+    btn.innerHTML = "⏳ Đang xử lý...";
 
-if (qrContent) {
-    new QRCode(document.getElementById("qr-wrap"), {
-        text: qrContent,
-        width: 220,
-        height: 220
-    });
-} else {
-    document.getElementById("qr-wrap").innerHTML = "<p>Không có dữ liệu QR.</p>";
-}
-const orderId = <?= json_encode($orderData['id'] ?? 0) ?>;
-
-function confirmPaid() {
-    fetch("<?= BASE_URL ?>api/confirm_payment.php", {
+    fetch("<?= BASE_URL ?>api/confirm_cod_order.php", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        
-        body: JSON.stringify({
-            order_id: orderId
-        })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reference: reference })
     })
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            alert("Thanh toán thành công!");
-
+            alert("Đặt hàng thành công!");
             window.location.href = "<?= BASE_URL ?>pages/orders.php";
         } else {
-            alert(data.message || "Có lỗi");
+            alert(data.message || "Có lỗi xảy ra");
+            btn.disabled = false;
+            btn.innerHTML = "Xác nhận đặt hàng";
         }
     })
-    .catch(() => alert("Lỗi kết .... server"));
+    .catch(() => {
+        alert("Lỗi kết nối máy chủ");
+        btn.disabled = false;
+        btn.innerHTML = "Xác nhận đặt hàng";
+    });
+}
+
+function confirmPayment() {
+    const btn = document.getElementById('btn-confirm-payment');
+    const orderId = "<?= $order_id ?>";
+    const reference = "<?= $reference ?>";
+    
+    btn.disabled = true;
+    btn.innerHTML = "⏳ Đang xử lý...";
+
+    fetch("<?= BASE_URL ?>api/comfirm_payment.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order_id: orderId, reference: reference })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert("Xác nhận thanh toán thành công!");
+            // Chuyển hướng sang trang thành công (có dấu tích) bằng cách dùng order_id mới
+            window.location.href = "<?= BASE_URL ?>pages/payment.php?order_id=" + data.order_id;
+        } else {
+            alert(data.message || "Có lỗi xảy ra");
+            btn.disabled = false;
+            btn.innerHTML = "Đã thanh toán";
+        }
+    })
+    .catch(() => {
+        alert("Lỗi kết nối máy chủ");
+        btn.disabled = false;
+        btn.innerHTML = "Đã thanh toán";
+    });
 }
 </script>
 
