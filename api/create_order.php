@@ -17,25 +17,38 @@ try {
     $coupon_id = isset($data['coupon_id']) ? (int)$data['coupon_id'] : null;
 
     $user_id = (int)$_SESSION['user_id'];
-    $checkout_ids = $_SESSION['checkout_items'] ?? [];
+    $checkout_items = $_SESSION['checkout_items'] ?? [];  // Now it's [[$prod_id, $size_id, $qty], ...]
 
-    if (empty($checkout_ids)) throw new Exception("Không có sản phẩm để đặt hàng");
+    if (empty($checkout_items)) throw new Exception("Không có sản phẩm để đặt hàng");
 
-    // Tính tổng tiền
-    $safe_ids = array_map('intval', $checkout_ids);
-    $ids = implode(',', $safe_ids);
-    $res_p = mysqli_query($conn, "SELECT id, price, name FROM products WHERE id IN ($ids)");
+    // Tính tổng tiền từ product_sizes table
     $subtotal = 0;
     $items_detail = [];
-    while ($row = mysqli_fetch_assoc($res_p)) {
-        $qty = (int)($_SESSION['cart'][$row['id']] ?? 0);
-        if ($qty > 0) {
-            $subtotal += (int)$row['price'] * $qty;
+    foreach ($checkout_items as $item_pair) {
+        if (!is_array($item_pair) || count($item_pair) < 2) continue;
+        
+        $product_id = (int)$item_pair[0];
+        $product_size_id = (int)$item_pair[1];
+        $qty = (int)($item_pair[2] ?? 1);  // Lấy qty từ checkout_items
+        
+        // Lấy thông tin từ product_sizes
+        $res_size = mysqli_query($conn, "
+            SELECT ps.price, ps.id, p.name 
+            FROM product_sizes ps
+            JOIN products p ON ps.product_id = p.id
+            WHERE ps.id = $product_size_id AND ps.product_id = $product_id
+        ");
+        $size_info = mysqli_fetch_assoc($res_size);
+        
+        if ($size_info) {
+            $price = (int)$size_info['price'];
+            $subtotal += $price * $qty;
             $items_detail[] = [
-                'id' => $row['id'],
-                'name' => $row['name'],
+                'product_id' => $product_id,
+                'product_size_id' => $product_size_id,
+                'name' => $size_info['name'],
                 'quantity' => $qty,
-                'price' => (int)$row['price']
+                'price' => $price
             ];
         }
     }

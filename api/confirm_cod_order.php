@@ -40,8 +40,15 @@ try {
 
     // 3. Lưu chi tiết đơn hàng & Trừ kho
     foreach ($order['items'] as $item) {
-        mysqli_query($conn, "INSERT INTO order_items (order_id, product_id, qty, price) VALUES ($order_id, {$item['id']}, {$item['quantity']}, {$item['price']})");
-        mysqli_query($conn, "UPDATE products SET stock = stock - {$item['quantity']} WHERE id = {$item['id']}");
+        $product_id = (int)$item['product_id'];
+        $product_size_id = (int)$item['product_size_id'];
+        $qty = (int)$item['quantity'];
+        $price = (int)$item['price'];
+        
+        mysqli_query($conn, "INSERT INTO order_items (order_id, product_id, product_size_id, qty, price) VALUES ($order_id, $product_id, $product_size_id, $qty, $price)");
+        
+        // Trừ stock từ product_sizes table
+        mysqli_query($conn, "UPDATE product_sizes SET stock = stock - $qty WHERE id = $product_size_id");
     }
 
     // 4. Cập nhật lượt dùng mã giảm giá
@@ -61,7 +68,11 @@ try {
     // 7. Xóa giỏ hàng và session liên quan
     unset($_SESSION['checkout_items']);
     foreach ($order['items'] as $item) {
-        unset($_SESSION['cart'][$item['id']]);
+        $product_id = (int)($item['product_id'] ?? 0);
+        $product_size_id = (int)($item['product_size_id'] ?? 0);
+        if ($product_id > 0 && $product_size_id > 0) {
+            unset($_SESSION['cart'][$product_id][$product_size_id]);
+        }
     }
     unset($_SESSION['coupon_id'], $_SESSION['discount_amount']);
 

@@ -29,9 +29,11 @@ $orders_res = mysqli_stmt_get_result($stmt_orders);
 $orders = [];
 while ($row = mysqli_fetch_assoc($orders_res)) {
     $order_id = $row['id'];
-    $sql_items = "SELECT oi.*, p.name, p.image 
+    $sql_items = "SELECT oi.*, p.name, p.image, s.name as size_name 
                   FROM order_items oi 
                   JOIN products p ON oi.product_id = p.id 
+                  LEFT JOIN product_sizes ps ON oi.product_size_id = ps.id 
+                  LEFT JOIN sizes s ON ps.size_id = s.id 
                   WHERE oi.order_id = ?";
     $stmt_items = mysqli_prepare($conn, $sql_items);
     mysqli_stmt_bind_param($stmt_items, "i", $order_id);
@@ -111,6 +113,9 @@ include(__DIR__ . "/../includes/header.php");
                                         <img src="<?= BASE_URL ?>images/<?= $item['image'] ?>" alt="<?= htmlspecialchars($item['name']) ?>" class="item-img">
                                         <div class="item-details">
                                             <h4 class="item-name"><?= htmlspecialchars($item['name']) ?></h4>
+                                            <?php if ($item['size_name']): ?>
+                                                <p class="item-meta">Size: <strong><?= htmlspecialchars($item['size_name']) ?></strong></p>
+                                            <?php endif; ?>
                                             <p class="item-meta">Số lượng: <?= $item['qty'] ?></p>
                                         </div>
                                         <div class="item-price">
