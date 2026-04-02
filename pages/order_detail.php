@@ -34,9 +34,11 @@ if (!$order_data) {
 
 // 2. Lấy chi tiết sản phẩm
 $items = [];
-$sql_items = "SELECT oi.*, p.name, p.image 
+$sql_items = "SELECT oi.*, p.name, p.image, s.name as size_name 
               FROM order_items oi 
               JOIN products p ON oi.product_id = p.id 
+              LEFT JOIN product_sizes ps ON oi.product_size_id = ps.id 
+              LEFT JOIN sizes s ON ps.size_id = s.id 
               WHERE oi.order_id = ?";
 $stmt_items = mysqli_prepare($conn, $sql_items);
 if ($stmt_items) {
@@ -79,6 +81,9 @@ include(__DIR__ . "/../includes/header.php");
                                     <img src="<?= BASE_URL ?>images/<?= $item['image'] ?>" alt="<?= htmlspecialchars($item['name']) ?>" class="item-img" style="width: 80px; height: 80px; border-radius: 8px; object-fit: cover;">
                                     <div class="item-details" style="flex: 1;">
                                         <h4 class="item-name" style="font-size: 16px; margin-bottom: 5px;"><?= htmlspecialchars($item['name']) ?></h4>
+                                        <?php if ($item['size_name']): ?>
+                                            <p class="item-meta" style="color: #888; font-size: 13px;">Size: <strong><?= htmlspecialchars($item['size_name']) ?></strong></p>
+                                        <?php endif; ?>
                                         <p class="item-meta" style="color: #888; font-size: 13px;">Số lượng: <?= $item['qty'] ?></p>
                                         <p class="item-price" style="color: var(--primary-color); font-weight: 700; margin-top: 5px;"><?= number_format($item['price'], 0, ',', '.') ?>đ</p>
                                     </div>
@@ -152,7 +157,16 @@ include(__DIR__ . "/../includes/header.php");
                             <p style="margin-bottom: 8px;"><strong>Nội dung:</strong> <span style="background: #fff; padding: 2px 8px; border: 1px solid #eee; font-weight: bold; color: #000; border-radius: 4px;">ORDER <?= htmlspecialchars($order_data['qr_content']) ?></span></p>
                         <?php endif; ?>
 
-                        <p><strong>Trạng thái:</strong> <?= ($order_data['payment_status'] ?? '') === 'paid' ? '<span style="color: #28a745; font-weight: 700;">Đã thanh toán</span>' : '<span style="color: #dc3545; font-weight: 700;">Chưa thanh toán</span>' ?></p>
+                        <p><strong>Trạng thái:</strong> <?php
+                    if ($order_data['status'] === 'completed') {
+                            echo '<span style="color: #28a745; font-weight: 700;">Đã thanh toán</span>';
+} else {
+    echo ($order_data['payment_status'] ?? '') === 'paid'
+        ? '<span style="color: #28a745; font-weight: 700;">Đã thanh toán</span>'
+        : '<span style="color: #dc3545; font-weight: 700;">Chưa thanh toán</span>';
+}
+?>
+</p>
                     </div>
                 </div>
             </div>

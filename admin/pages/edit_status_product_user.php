@@ -27,9 +27,11 @@ if (!$order) die("Không tìm thấy đơn hàng");
 //  LẤY ORDER ITEMS
 // =======================
 $res_items = mysqli_query($conn, "
-    SELECT oi.qty, oi.price, p.name 
+    SELECT oi.qty, oi.price, p.name, s.name as size_name 
     FROM order_items oi
     JOIN products p ON oi.product_id = p.id
+    LEFT JOIN product_sizes ps ON oi.product_size_id = ps.id
+    LEFT JOIN sizes s ON ps.size_id = s.id
     WHERE oi.order_id = $id
 ");
 
@@ -111,6 +113,9 @@ $statusLabels = [
                     <div class="order-item">
                         <div>
                             <div class="item-name"><?= htmlspecialchars($item['name']) ?></div>
+                            <?php if ($item['size_name']): ?>
+                                <div class="item-meta">Size: <strong><?= htmlspecialchars($item['size_name']) ?></strong></div>
+                            <?php endif; ?>
                             <div class="item-meta">SL: <?= $item['qty'] ?></div>
                         </div>
 

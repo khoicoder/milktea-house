@@ -32,15 +32,44 @@ $first_phone   = htmlspecialchars($user_phones[0] ?? '');
 $first_address = htmlspecialchars($user_addresses[0] ?? '');
 
 // Lấy sản phẩm checkout
-$checkout_ids = $_SESSION['checkout_items'] ?? [];
-$cart_items   = [];
+$checkout_items = $_SESSION['checkout_items'] ?? [];
+$cart_items = [];
 
-if (!empty($checkout_ids) && isset($_SESSION['cart'])) {
-    $ids = implode(',', array_map('intval', $checkout_ids));
-    $res = mysqli_query($conn, "SELECT id, name, price, image FROM products WHERE id IN ($ids)");
-    while ($row = mysqli_fetch_assoc($res)) {
-        $row['quantity'] = $_SESSION['cart'][$row['id']] ?? 0;
-        $cart_items[] = $row;
+if (!empty($checkout_items)) {
+    // checkout_items có dạng: [[$product_id, $product_size_id, $qty], ...]
+    foreach ($checkout_items as $item_key) {
+        if (is_array($item_key) && count($item_key) >= 2) {
+            $prod_id = (int)$item_key[0];
+            $size_id = (int)$item_key[1];
+            $qty = (int)($item_key[2] ?? 1);  // Lấy qty từ checkout_items
+            
+            // Lấy thông tin product
+            $prod_result = mysqli_query($conn, "SELECT id, name, image FROM products WHERE id = $prod_id");
+            $product = mysqli_fetch_assoc($prod_result);
+            
+            if ($product) {
+                // Lấy thông tin size
+                $size_result = mysqli_query($conn, "
+                    SELECT ps.id, ps.price, s.name as size_name
+                    FROM product_sizes ps
+                    JOIN sizes s ON ps.size_id = s.id
+                    WHERE ps.id = $size_id
+                ");
+                $size_info = mysqli_fetch_assoc($size_result);
+                
+                if ($size_info) {
+                    $cart_items[] = [
+                        'id' => $product['id'],
+                        'name' => $product['name'],
+                        'image' => $product['image'],
+                        'product_size_id' => $size_id,
+                        'size_name' => $size_info['size_name'],
+                        'price' => $size_info['price'],
+                        'quantity' => $qty
+                    ];
+                }
+            }
+        }
     }
 }
 
@@ -96,6 +125,9 @@ include("../includes/header.php");
                 </div>
                 <div class="item-meta">
                   <div class="item-name"><?= htmlspecialchars($item['name']) ?></div>
+                  <div style="font-size: 13px; color: #666; margin: 4px 0;">
+                    Size: <strong><?= htmlspecialchars($item['size_name']) ?></strong>
+                  </div>
                   <div class="item-price-row">
                     <span class="item-unit"><?= number_format($item['price'], 0, ',', '.') ?>đ</span>
                     <span class="item-qty">× <?= $item['quantity'] ?></span>

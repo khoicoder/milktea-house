@@ -14,17 +14,45 @@ $from_waiting = false;
 
 if ($order_id > 0) {
     $stmt = $conn->prepare("SELECT * FROM orders WHERE id = ? AND user_id = ? LIMIT 1");
+    if (!$stmt) {
+        die("Prepare error: " . $conn->error);
+    }
     $stmt->bind_param("ii", $order_id, $user_id);
     $stmt->execute();
     $orderData = $stmt->get_result()->fetch_assoc();
 } elseif (!empty($reference)) {
+    echo "<!-- Debug: Tìm reference: $reference -->";
     $stmt = $conn->prepare("SELECT * FROM payment_waiting WHERE reference = ? LIMIT 1");
+    if (!$stmt) {
+        die("Prepare error payment_waiting: " . $conn->error);
+    }
     $stmt->bind_param("s", $reference);
-    $stmt->execute();
-    $waiting = $stmt->get_result()->fetch_assoc();
+    if (!$stmt->execute()) {
+        die("Execute error: " . $stmt->error);
+    }
+    $result = $stmt->get_result();
+    if (!$result) {
+        die("Get result error: " . $stmt->error);
+    }
+    $waiting = $result->fetch_assoc();
+    echo "<!-- Debug: Kết quả từ payment_waiting: " . json_encode($waiting) . " -->";
+    
     if ($waiting) {
         $orderData = json_decode($waiting['order_data'], true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            die("JSON decode error: " . json_last_error_msg());
+        }
         $from_waiting = true;
+    } else {
+        echo "<!-- Debug: Không tìm thấy reference trong payment_waiting, kiểm tra tất cả dữ liệu -->";
+        $allResult = $conn->query("SELECT reference FROM payment_waiting LIMIT 10");
+        if ($allResult) {
+            echo "<!-- Payment_waiting records: ";
+            while ($row = $allResult->fetch_assoc()) {
+                echo $row['reference'] . ", ";
+            }
+            echo " -->";
+        }
     }
 }
 
@@ -99,15 +127,17 @@ $payment_status = $from_waiting ? 'unpaid' : ($orderData['payment_status'] ?? 'u
                         <!-- Thêm mã QR VietQR -->
                         <div style="text-align: center; margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
                             <p style="font-size: 13px; color: #666; margin-bottom: 10px;">Quét mã bằng App Ngân hàng để thanh toán nhanh</p>
-                            <img src="https://img.vietqr.io/image/MB-0792302274-compact2.png?amount=<?= $amount ?>&addInfo=ORDER%20<?= $reference ?>&accountName=LE%20HUU%20BANG" 
-                                 alt="QR Thanh toán" 
+                            <img src="https://img.vietqr.io/image/ICB-100882563121-compact2.png
+                            ?amount=<?= $amount ?>
+                            &addInfo=ORDER%20<?= $reference ?: $order_id ?>
+    &accountName=LE%20MINH%20KHOI"alt="QR Thanh toán" 
                                  style="max-width: 200px; height: auto; border: 1px solid #f0f0f0; border-radius: 8px;">
                         </div>
 
                         <div style="background: #f0f7ff; padding: 20px; border-radius: 10px; border-left: 5px solid #00468c; margin-bottom: 20px;">
-                            <p style="margin-bottom: 8px;"><strong>Ngân hàng:</strong> <span style="color:#00468c">MB BANK (Quân Đội)</span></p>
-                            <p style="margin-bottom: 8px;"><strong>Chủ tài khoản:</strong> <span style="color:#333">LE HUU BANG</span></p>
-                            <p style="margin-bottom: 8px;"><strong>Số tài khoản:</strong> <span style="color:#d32f2f; font-weight:bold; font-size: 18px;">0792302274</span></p>
+                            <p style="margin-bottom: 8px;"><strong>Ngân hàng:</strong> <span style="color:#00468c">Vietinbank</span></p>
+                            <p style="margin-bottom: 8px;"><strong>Chủ tài khoản:</strong> <span style="color:#333">LE MINH KHOI</span></p>
+                            <p style="margin-bottom: 8px;"><strong>Số tài khoản:</strong> <span style="color:#d32f2f; font-weight:bold; font-size: 18px;">100882563121</span></p>
                             <p style="margin-bottom: 8px;"><strong>Số tiền:</strong> <span style="color:#d32f2f; font-weight:bold;"><?= number_format($amount, 0, ',', '.') ?>đ</span></p>
                             <p style="margin-bottom: 0;"><strong>Nội dung:</strong> <span style="background: #fff; padding: 2px 8px; border: 1px solid #ccc; font-weight: bold; color: #000;">ORDER <?= $reference ?: $order_id ?></span></p>
                         </div>
@@ -152,6 +182,7 @@ function confirmCOD() {
     const btn = document.getElementById('btn-confirm-cod');
     const reference = "<?= $reference ?>";
     
+    console.log("confirmCOD called with reference:", reference);
     btn.disabled = true;
     btn.innerHTML = "⏳ Đang xử lý...";
 
@@ -160,42 +191,62 @@ function confirmCOD() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reference: reference })
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            alert("Đặt hàng thành công!");
-            window.location.href = "<?= BASE_URL ?>pages/orders.php";
-        } else {
-            alert(data.message || "Có lỗi xảy ra");
+    .then(res => {
+        console.log("Response status:", res.status, res.statusText);
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+        return res.text(); // Lấy text trước
+    })
+    .then(text => {
+        console.log("Response text:", text);
+        try {
+            const data = JSON.parse(text);
+            console.log("Parsed data:", data);
+            
+            if (data.success) {
+                alert("Đặt hàng thành công!");
+                window.location.href = "<?= BASE_URL ?>pages/orders.php";
+            } else {
+                alert(data.message || "Có lỗi xảy ra");
+                btn.disabled = false;
+                btn.innerHTML = "Xác nhận đặt hàng";
+            }
+        } catch (parseErr) {
+            console.error("JSON parse error:", parseErr.message);
+            alert("Lỗi: Server trả về dữ liệu không hợp lệ\n" + text);
             btn.disabled = false;
             btn.innerHTML = "Xác nhận đặt hàng";
         }
     })
-    .catch(() => {
-        alert("Lỗi kết nối máy chủ");
+    .catch(err => {
+        console.error("Fetch error:", err.message, err);
+        alert("Lỗi kết nối: " + err.message);
         btn.disabled = false;
         btn.innerHTML = "Xác nhận đặt hàng";
     });
 }
-
 function confirmPayment() {
     const btn = document.getElementById('btn-confirm-payment');
     const orderId = "<?= $order_id ?>";
     const reference = "<?= $reference ?>";
-    
+
     btn.disabled = true;
     btn.innerHTML = "⏳ Đang xử lý...";
 
-    fetch("<?= BASE_URL ?>api/comfirm_payment.php", {
+    fetch("<?= BASE_URL ?>api/confirm_payment.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ order_id: orderId, reference: reference })
     })
-    .then(res => res.json())
-    .then(data => {
+    .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.text();
+    })
+    .then(text => {
+        const data = JSON.parse(text);
         if (data.success) {
             alert("Xác nhận thanh toán thành công!");
-            // Chuyển hướng sang trang thành công (có dấu tích) bằng cách dùng order_id mới
             window.location.href = "<?= BASE_URL ?>pages/payment.php?order_id=" + data.order_id;
         } else {
             alert(data.message || "Có lỗi xảy ra");
@@ -203,12 +254,12 @@ function confirmPayment() {
             btn.innerHTML = "Đã thanh toán";
         }
     })
-    .catch(() => {
-        alert("Lỗi kết nối máy chủ");
+    .catch(err => {
+        alert("Lỗi: " + err.message);
         btn.disabled = false;
         btn.innerHTML = "Đã thanh toán";
     });
-}
+} 
 </script>
 
 <?php include("../includes/footer.php"); ?>

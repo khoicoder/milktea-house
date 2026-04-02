@@ -66,7 +66,7 @@ ORDER BY p.id DESC
 <td><?= $p['id'] ?></td>
 
 <td>
-    <img src="../../uploads/<?= $p['image'] ?>" class="product-img">
+    <img src="../../images/<?= $p['image'] ?>" class="product-img">
 </td>
 
 <td><?= $p['name'] ?></td>

@@ -8,15 +8,48 @@ if (!isset($_SESSION['user_id'])) {
 
 $cart_items = [];
 if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
-    $safe_ids = array_map('intval', array_keys($_SESSION['cart']));
-    $ids = implode(',', $safe_ids);
-
-    $sql = "SELECT id, name, price, image, stock FROM products WHERE id IN ($ids)";
-    $result = mysqli_query($conn, $sql);
-
-    while ($row = mysqli_fetch_assoc($result)) {
-        $row['quantity'] = $_SESSION['cart'][$row['id']];
-        $cart_items[] = $row;
+    foreach ($_SESSION['cart'] as $product_id => $sizes) {
+        $product_id = (int)$product_id;
+        
+        // Kiểm tra xem $sizes có phải mảng không (structure mới)
+        // Nếu không phải mảng (là int), bỏ qua (cart cũ)
+        if (!is_array($sizes)) {
+            continue;
+        }
+        
+        // Lấy thông tin sản phẩm
+        $result = mysqli_query($conn, "SELECT id, name, image FROM products WHERE id = $product_id");
+        $product = mysqli_fetch_assoc($result);
+        
+        if ($product) {
+            // Lấy thông tin từng size cho sản phẩm này
+            foreach ($sizes as $product_size_id => $quantity) {
+                $product_size_id = (int)$product_size_id;
+                $quantity = (int)$quantity;
+                
+                // Lấy giá và size name từ product_sizes
+                $size_result = mysqli_query($conn, "
+                    SELECT ps.id, ps.price, ps.stock, s.name as size_name
+                    FROM product_sizes ps
+                    JOIN sizes s ON ps.size_id = s.id
+                    WHERE ps.id = $product_size_id
+                ");
+                $size_info = mysqli_fetch_assoc($size_result);
+                
+                if ($size_info) {
+                    $cart_items[] = [
+                        'id' => $product['id'],
+                        'name' => $product['name'],
+                        'image' => $product['image'],
+                        'product_size_id' => $product_size_id,
+                        'size_name' => $size_info['size_name'],
+                        'price' => $size_info['price'],
+                        'stock' => $size_info['stock'],
+                        'quantity' => $quantity
+                    ];
+                }
+            }
+        }
     }
 }
 
@@ -56,36 +89,41 @@ include("../includes/header.php");
 
                     <div id="cart-item-list">
                         <?php foreach ($cart_items as $item): ?>
-                        <div class="cart-box item-row" id="item-row-<?= $item['id'] ?>">
+                        <div class="cart-box item-row" id="item-row-<?= $item['product_size_id'] ?>">
                             <div class="col-check">
-                                <input type="checkbox" class="item-check" value="<?= $item['id'] ?>" onclick="calculateTotal()">
+                                <input type="checkbox" class="item-check" value="<?= $item['product_size_id'] ?>" onclick="calculateTotal()">
                             </div>
                             <div class="col-product">
                                 <img src="<?= BASE_URL ?>images/<?= $item['image'] ?>"
                                      class="product-img"
                                      alt="<?= htmlspecialchars($item['name']) ?>"
                                      onerror="this.onerror=null; this.src='<?= BASE_URL ?>images/default.jpg';">
-                                <a href="<?= BASE_URL ?>pages/product_detail.php?id=<?= $item['id'] ?>" class="product-name">
-                                    <?= htmlspecialchars($item['name']) ?>
-                                </a>
+                                <div>
+                                    <a href="<?= BASE_URL ?>pages/product_detail.php?id=<?= $item['id'] ?>" class="product-name">
+                                        <?= htmlspecialchars($item['name']) ?>
+                                    </a>
+                                    <div style="font-size: 13px; color: #666; margin-top: 4px;">
+                                        Size: <strong><?= htmlspecialchars($item['size_name']) ?></strong>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-price" id="price-<?= $item['id'] ?>" data-price="<?= $item['price'] ?>">
+                            <div class="col-price" id="price-<?= $item['product_size_id'] ?>" data-price="<?= $item['price'] ?>">
                                 <?= number_format($item['price'], 0, ',', '.') ?>đ
                             </div>
                             <div class="col-qty">
                                 <div class="qty-control">
-                                    <button class="qty-btn" onclick="updateQty(<?= $item['id'] ?>, -1)">−</button>
-                                    <input type="text" class="qty-input" id="qty-<?= $item['id'] ?>"
+                                    <button class="qty-btn" onclick="updateQty(<?= $item['product_size_id'] ?>, -1)">−</button>
+                                    <input type="text" class="qty-input" id="qty-<?= $item['product_size_id'] ?>"
                                            value="<?= $item['quantity'] ?>"
                                            data-stock="<?= $item['stock'] ?>" readonly>
-                                    <button class="qty-btn" onclick="updateQty(<?= $item['id'] ?>, 1)">+</button>
+                                    <button class="qty-btn" onclick="updateQty(<?= $item['product_size_id'] ?>, 1)">+</button>
                                 </div>
                             </div>
-                            <div class="col-subtotal" id="subtotal-<?= $item['id'] ?>">
+                            <div class="col-subtotal" id="subtotal-<?= $item['product_size_id'] ?>">
                                 <?= number_format($item['price'] * $item['quantity'], 0, ',', '.') ?>đ
                             </div>
                             <div class="col-action">
-                                <button class="btn-delete" title="Xóa" onclick="removeItem(<?= $item['id'] ?>)">
+                                <button class="btn-delete" title="Xóa" onclick="removeItem(<?= $item['product_size_id'] ?>)">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                          fill="none" stroke="currentColor" stroke-width="2.2"
                                          stroke-linecap="round" stroke-linejoin="round">
@@ -159,7 +197,7 @@ include("../includes/header.php");
                         </div>
 
                         <!-- Checkout -->
-                        <button class="btn-checkout" onclick="goToCheckout()">Đặt hàng ngay →</button>
+                        <button class="btn-checkout" onclick="alert('Button click!'); goToCheckout();">Đặt hàng ngay →</button>
                         <a href="<?= BASE_URL ?>index.php" class="btn-continue">← Tiếp tục mua sắm</a>
                     </div>
                 </div>
@@ -173,5 +211,10 @@ include("../includes/header.php");
 </script>
 <script src="<?= BASE_URL ?>js/cart.js"></script>
 <script src="<?= BASE_URL ?>js/form_checkout.js"></script>
+<script>
+    console.log("BASE_URL:", window.BASE_URL);
+    console.log("Số item trong cart_items PHP:", <?= count($cart_items) ?>);
+    console.log("Số .item-row tìm được:", document.querySelectorAll(".item-row").length);
+</script>
 
 <?php include(__DIR__ . "/../includes/footer.php"); ?>
