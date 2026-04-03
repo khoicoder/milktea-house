@@ -8,18 +8,19 @@ function get_stat($conn, $sql) {
     $row = mysqli_fetch_row($result);
     return $row ? (float)$row[0] : 0;
 }
-
-$from    = $_GET['from'] ?? date("Y-m-01");
-$to      = $_GET['to'] ?? date("Y-m-d");
+$from = !empty($_GET['from_date']) ? $_GET['from_date'] : date("Y-m-01");
+$to   = !empty($_GET['to_date']) ? $_GET['to_date'] : date("Y-m-d");
 $period  = $_GET['period'] ?? 'month';
-$chartType = $_GET['chartType'] ?? 'bar';
+$chartType = $_GET['chart_type'] ?? 'bar';
 
 $totalUsers    = get_stat($conn, "SELECT COUNT(*) FROM users");
 $totalProducts = get_stat($conn, "SELECT COUNT(*) FROM products");
 $totalOrders   = get_stat($conn, "SELECT COUNT(*) FROM orders");
-$revenue       = get_stat($conn, "SELECT SUM(total) FROM orders WHERE DATE(created_at) BETWEEN '$from' AND '$to'");
-$revenue_display = number_format((float)$revenue, 0, ',', '.') . "đ";
+$revenue       = get_stat($conn, "SELECT SUM(total) FROM orders
+    WHERE DATE(created_at)
+    BETWEEN '$from' AND '$to'");
 
+$revenue_display = number_format((float)$revenue, 0, ',', '.') . "VNĐ";
 $currentMonthStart = date("Y-m-01");
 $nextMonthStart    = date("Y-m-01", strtotime("+1 month"));
 $prevMonthStart    = date("Y-m-01", strtotime("-1 month"));
@@ -142,12 +143,12 @@ $statusLabels = [
             <form class="chart-toolbar" id="filterForm">
                 <div class="field" >
                     <label>Từ ngày</label>
-                    <input type="date" name="from_date">
+                    <input type="date" name="from_date" value="<?= date('Y-m-01') ?>">
                 </div>
 
                 <div class="field">
                     <label>Đến ngày</label>
-                    <input type="date" name = "to_date">
+                    <input type="date" name = "to_date" value="<?= date('Y-m-01') ?>">
                 </div>
 
                 <div class="field">

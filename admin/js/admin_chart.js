@@ -44,6 +44,7 @@ function loadRevenueChart() {
             tooltip: {
               callbacks: {
                 label: function (context) {
+                  console.log(params);
                   return Number(context.raw).toLocaleString("vi-VN") + "đ";
                 },
               },
@@ -72,11 +73,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const form = document.getElementById("filterForm");
   const chartType = document.getElementById("chartType");
-  const period = document.getElementById("period");
+  const period = document.getElementById("periodSelect");
 
   if (form) {
     form.addEventListener("submit", (e) => {
       console.log("Form submitted");
+      console.log(
+        "Form data:",
+        new URLSearchParams(new FormData(form)).toString(),
+      );
       e.preventDefault();
       loadRevenueChart();
     });
