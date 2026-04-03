@@ -37,15 +37,32 @@ try {
             // Di chuyển sang bảng orders chính thức với trạng thái đã thanh toán
             $stmtOrder = mysqli_prepare($conn, "INSERT INTO orders (user_id, coupon_id, total, discount_amount, status, name, phone, address, note, payment_method, payment_status, paid_at, qr_content) VALUES (?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, 'paid', NOW(), ?)");
             // Total 10 parameters to bind (4 integers, 6 strings)
-            mysqli_stmt_bind_param($stmtOrder, "iiiissssss", $order_data['user_id'], $order_data['coupon_id'], $order_data['total'], $order_data['discount_amount'], $order_data['name'], $order_data['phone'], $order_data['address'], $order_data['note'], $order_data['payment_method'], $reference);
+            mysqli_stmt_bind_param($stmtOrder, "iiddssssss", $order_data['user_id'], $order_data['coupon_id'], $order_data['total'], $order_data['discount_amount'], $order_data['name'], $order_data['phone'], $order_data['address'], $order_data['note'], $order_data['payment_method'], $reference);
             mysqli_stmt_execute($stmtOrder);
             $order_id = mysqli_insert_id($conn);
 
             // Lưu chi tiết đơn hàng
             foreach ($order_data['items'] as $item) {
-                mysqli_query($conn, "INSERT INTO order_items (order_id, product_id, qty, price) VALUES ($order_id, {$item['id']}, {$item['quantity']}, {$item['price']})");
-                mysqli_query($conn, "UPDATE products SET stock = stock - {$item['quantity']} WHERE id = {$item['id']}");
+                    $pid = (int)($item['id'] ?? $item['product_id'] ?? 0);
+                    $qty = (int)($item['quantity'] ?? $item['qty'] ?? 0);
+                    $price = (int)($item['price'] ?? 0);
+
+            if ($pid <= 0 || $qty <= 0) {
+                    throw new Exception("Dữ liệu sản phẩm lỗi");
             }
+            if (!mysqli_query($conn, "
+                    INSERT INTO order_items (order_id, product_id, qty, price) 
+                    VALUES ($order_id, $pid, $qty, $price)")) {
+                    throw new Exception(mysqli_error($conn));
+                }
+
+            if (!mysqli_query($conn, "
+                UPDATE products 
+                SET stock = stock - $qty 
+                WHERE id = $pid")) {
+        throw new Exception(mysqli_error($conn));
+    }
+}
 
             // Cập nhật lượt dùng mã giảm giá
             if ($order_data['coupon_id'] && $order_data['discount_amount'] > 0) {
@@ -58,7 +75,12 @@ try {
             
             // Xóa giỏ hàng
             unset($_SESSION['checkout_items']);
-            foreach ($order_data['items'] as $item) unset($_SESSION['cart'][$item['id']]);
+            foreach ($order_data['items'] as $item) {
+             $pid = $item['id'] ?? $item['product_id'] ?? null;
+            if ($pid !== null) {
+                unset($_SESSION['cart'][$pid]);
+    }
+}
             unset($_SESSION['coupon_id'], $_SESSION['discount_amount']);
 
             // Tạo biến order giả lập để dùng tiếp ở dưới

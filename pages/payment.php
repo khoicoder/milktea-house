@@ -244,14 +244,21 @@ function confirmPayment() {
         return res.text();
     })
     .then(text => {
+        console.log("RAW RESPONSE:", text);
+
+        try {
         const data = JSON.parse(text);
+        console.log("Parsed data:", data);
+    } catch (e) {
+        console.error("JSON parse error:", e.message);
+    }
         if (data.success) {
             alert("Xác nhận thanh toán thành công!");
             window.location.href = "<?= BASE_URL ?>pages/payment.php?order_id=" + data.order_id;
         } else {
             alert(data.message || "Có lỗi xảy ra");
             btn.disabled = false;
-            btn.innerHTML = "Đã thanh toán";
+            btn.innerHTML = "Đã thanh toán 111";
         }
     })
     .catch(err => {

@@ -2,8 +2,8 @@
 require_once("../../config/config.php");
 
 $type = $_GET['period'] ?? 'month';
-$from = $_GET['from'] ?? date("Y-m-01");
-$to   = $_GET['to'] ?? date("Y-m-d");
+$from = $_GET['from_date'] ?? date("Y-m-01");
+$to   = $_GET['to_date'] ?? date("Y-m-d");
 
 if ($type === 'day') {
     $labelSql = "DATE(created_at)";
