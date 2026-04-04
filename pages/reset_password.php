@@ -1,9 +1,10 @@
 <?php
 include("../config/config.php");
 $page_css = "auth.css";
-if(isset($page_css)){
-    echo '<link rel="stylesheet" href="'.BASE_URL.'css/' . $page_css . '">';
-}
+
+// if(isset($page_css)){
+//     echo '<link rel="stylesheet" href="'.BASE_URL.'css/' . $page_css . '">';
+// }
 $message = "";
 
 // 1. Lấy token từ URL
@@ -62,7 +63,116 @@ if (isset($_POST['reset'])) {
 
 <!DOCTYPE html>
 <html>
+<style> /* ===== RESET ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+/* ===== BODY ===== */
+body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== CONTAINER ===== */
+.auth-container {
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(18px);
+    border-radius: 20px;
+    padding: 40px 30px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    animation: fadeIn 0.6s ease;
+}
+
+/* ===== TITLE ===== */
+.auth-container h2 {
+    text-align: center;
+    color: #fff;
+    margin-bottom: 25px;
+    font-weight: 700;
+}
+
+/* ===== MESSAGE ===== */
+.auth-message {
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #ffdddd;
+}
+
+/* ===== FORM ===== */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* ===== INPUT ===== */
+.auth-form input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.auth-form input:focus {
+    box-shadow: 0 0 0 2px #fff;
+}
+
+/* ===== LABEL ===== */
+.auth-form label {
+    font-size: 14px;
+    color: #fff;
+    font-weight: 500;
+}
+
+/* ===== ERROR ===== */
+.auth-error {
+    font-size: 12px;
+    color: #ffb3b3;
+}
+
+/* ===== BUTTON ===== */
+.auth-form button {
+    margin-top: 10px;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: #fff;
+    color: #5a67d8;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.auth-form button:hover {
+    background: #5a67d8;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* ===== ANIMATION ===== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}</style>
 <head>
     <title>Reset mật khẩu</title>
 </head>

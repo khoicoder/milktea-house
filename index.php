@@ -3,20 +3,19 @@ require_once(__DIR__ . "/config/config.php");
 $page_css = "product.css";
 include(__DIR__ . "/includes/header.php");
 
-
 $category_id = intval($_GET['id'] ?? 0);
 $search = $_GET['search'] ?? '';
 $min = isset($_GET['min']) && $_GET['min'] !== '' ? intval($_GET['min']) : 0;
 $max = isset($_GET['max']) && $_GET['max'] !== '' ? intval($_GET['max']) : 1000000;
 $sort = $_GET['sort'] ?? 'newest';
 
-
 if ($min > $max) {
-    $tmp = $min; $min = $max; $max = $tmp;
+    $tmp = $min;
+    $min = $max;
+    $max = $tmp;
 }
 
 $search_esc = mysqli_real_escape_string($conn, $search);
-
 
 $sql = "SELECT id, name, price, image, description, stock FROM products WHERE price BETWEEN {$min} AND {$max}";
 
@@ -28,7 +27,6 @@ if ($search_esc !== '') {
     $sql .= " AND name LIKE '%{$search_esc}%'";
 }
 
-// Xử lý sắp xếp
 switch ($sort) {
     case 'price_asc':
         $sql .= " ORDER BY price ASC";
@@ -43,7 +41,6 @@ switch ($sort) {
 
 $result = mysqli_query($conn, $sql);
 
-// Lấy tên danh mục nếu có
 $category_name = "Đồ uống phổ biến";
 if ($category_id > 0) {
     $res_cat = mysqli_query($conn, "SELECT name FROM categories WHERE id = $category_id");
@@ -52,9 +49,52 @@ if ($category_id > 0) {
     }
 }
 
-// Kiểm tra xem có đang lọc hay không
 $is_filtering = !empty($search) || $min > 0 || $max < 1000000 || $sort !== 'newest';
 ?>
+
+<style>
+.product-card .size-options {
+    margin-top: 12px;
+    display: grid;
+    gap: 8px;
+}
+.product-card .size-options label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #4a5568;
+}
+.product-card .size-options select {
+    width: 100%;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px 12px;
+    outline: none;
+    background: #fff;
+    font-size: 14px;
+}
+.product-card .selected-price {
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #e53e3e;
+}
+.product-card .selected-price.ok {
+    color: #16a34a;
+}
+.product-card .selected-price.warn {
+    color: #e53e3e;
+}
+.product-card .card-footer {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.product-card .card-footer .btn {
+    flex: 1;
+    justify-content: center;
+}
+</style>
 
 <section class="products product-page">
   <div class="container">
@@ -70,7 +110,6 @@ $is_filtering = !empty($search) || $min > 0 || $max < 1000000 || $sort !== 'newe
         <p style="color: #718096; font-size: 15px;">Khám phá hương vị trà sữa tuyệt vời nhất</p>
     </div>
 
-    <!-- Filter form -->
     <div class="filter-section">
       <form method="GET" class="filter-form">
         <input type="hidden" name="id" value="<?= htmlspecialchars($category_id) ?>">
@@ -114,12 +153,42 @@ $is_filtering = !empty($search) || $min > 0 || $max < 1000000 || $sort !== 'newe
       </form>
     </div>
 
-    <!-- Grid -->
     <div class="product-grid">
       <?php if ($result && mysqli_num_rows($result) > 0): ?>
         <?php while ($row = mysqli_fetch_assoc($result)): ?>
-          <article class="product-card" aria-labelledby="prod-<?= $row['id'] ?>">
-            <a class="product-thumb" href="<?= BASE_URL ?>pages/product_detail.php?id=<?= $row['id'] ?>" aria-label="<?= htmlspecialchars($row['name']) ?>">
+          <?php
+            $product_id = (int)$row['id'];
+
+            $sizes = [];
+            $total_stock = 0;
+            $min_price = null;
+
+            $res_size = mysqli_query($conn, "
+                SELECT ps.id, s.name AS size_name, ps.price, ps.stock
+                FROM product_sizes ps
+                JOIN sizes s ON ps.size_id = s.id
+                WHERE ps.product_id = {$product_id}
+                ORDER BY s.id ASC
+            ");
+
+            if ($res_size && mysqli_num_rows($res_size) > 0) {
+                while ($size_row = mysqli_fetch_assoc($res_size)) {
+                    $sizes[] = $size_row;
+                    $total_stock += (int)$size_row['stock'];
+                    if ($min_price === null || (int)$size_row['price'] < $min_price) {
+                        $min_price = (int)$size_row['price'];
+                    }
+                }
+            } else {
+                $total_stock = (int)$row['stock'];
+                $min_price = (int)$row['price'];
+            }
+
+            $has_sizes = count($sizes) > 0;
+          ?>
+
+          <article class="product-card" aria-labelledby="prod-<?= $product_id ?>">
+            <a class="product-thumb" href="<?= BASE_URL ?>pages/product_detail.php?id=<?= $product_id ?>" aria-label="<?= htmlspecialchars($row['name']) ?>">
               <img
                 src="<?= BASE_URL ?>images/<?= htmlspecialchars($row['image'] ?? '') ?>"
                 alt="<?= htmlspecialchars($row['name']) ?>"
@@ -128,7 +197,7 @@ $is_filtering = !empty($search) || $min > 0 || $max < 1000000 || $sort !== 'newe
             </a>
 
             <div class="product-info">
-              <a id="prod-<?= $row['id'] ?>" class="product-name" href="<?= BASE_URL ?>pages/product_detail.php?id=<?= $row['id'] ?>">
+              <a id="prod-<?= $product_id ?>" class="product-name" href="<?= BASE_URL ?>pages/product_detail.php?id=<?= $product_id ?>">
                 <?= htmlspecialchars($row['name']) ?>
               </a>
 
@@ -136,27 +205,54 @@ $is_filtering = !empty($search) || $min > 0 || $max < 1000000 || $sort !== 'newe
 
               <div class="product-meta">
                 <div class="price-wrap">
-                  <div class="price-sale"><?= number_format($row['price'], 0, ',', '.') ?>đ</div>
+                  <div id="price-display-<?= $product_id ?>" class="price-sale">
+                    <?= $has_sizes ? ('Từ ' . number_format($min_price, 0, ',', '.') . 'đ') : number_format($min_price, 0, ',', '.') . 'đ' ?>
+                  </div>
                 </div>
 
-                <?php if (isset($row['stock']) && $row['stock'] > 0): ?>
+                <?php if ($total_stock > 0): ?>
                   <span class="status-badge status-in">Còn hàng</span>
                 <?php else: ?>
                   <span class="status-badge status-out">Hết hàng</span>
                 <?php endif; ?>
               </div>
-          
+
+              <?php if ($has_sizes): ?>
+                <div class="size-options">
+                  <label for="size-select-<?= $product_id ?>">Chọn size:</label>
+                  <select id="size-select-<?= $product_id ?>" onchange="updateCardPrice(<?= $product_id ?>)">
+                    <option value="">-- Chọn size --</option>
+                    <?php foreach ($sizes as $size): ?>
+                      <option
+                        value="<?= (int)$size['id'] ?>"
+                        data-price="<?= (int)$size['price'] ?>"
+                        data-stock="<?= (int)$size['stock'] ?>"
+                        <?= ((int)$size['stock'] <= 0) ? 'disabled' : '' ?>
+                      >
+                        <?= htmlspecialchars($size['size_name']) ?> - <?= number_format((int)$size['price'], 0, ',', '.') ?>đ
+                        <?= ((int)$size['stock'] <= 0) ? ' (Hết hàng)' : '' ?>
+                      </option>
+                    <?php endforeach; ?>
+                  </select>
+                </div>
+
+                <div id="selected-info-<?= $product_id ?>" class="selected-price warn">
+                  Vui lòng chọn size
+                </div>
+              <?php endif; ?>
+
               <div class="card-footer" style="margin-top:10px;">
-                <button 
-                    class="btn btn-primary" 
-                    type="button" 
-                    onclick="addCart(<?= (int)$row['id'] ?>)"
-                    <?= (isset($row['stock']) && $row['stock'] <= 0) ? 'disabled style="background: #cbd5e0; cursor: not-allowed;"' : '' ?>
+                <button
+                    id="add-cart-btn-<?= $product_id ?>"
+                    class="btn btn-primary"
+                    type="button"
+                    onclick="addCart(<?= $product_id ?>)"
+                    <?= ($total_stock <= 0) ? 'disabled style="background: #cbd5e0; cursor: not-allowed;"' : ($has_sizes ? 'disabled' : '') ?>
                 >
                   Thêm vào giỏ
                 </button>
 
-                <a class="btn btn-outline" href="<?= BASE_URL ?>pages/product_detail.php?id=<?= $row['id'] ?>" style="text-decoration:none;">
+                <a class="btn btn-outline" href="<?= BASE_URL ?>pages/product_detail.php?id=<?= $product_id ?>" style="text-decoration:none;">
                   Chi tiết
                 </a>
               </div>
@@ -175,6 +271,141 @@ $is_filtering = !empty($search) || $min > 0 || $max < 1000000 || $sort !== 'newe
 
   </div>
 </section>
- 
+
 <?php include(__DIR__ . "/includes/footer.php"); ?>
 
+<script>
+    window.BASE_URL = '<?= rtrim(BASE_URL, '/') . '/' ?>';
+
+    function updateCardPrice(productId) {
+        const sizeSelect = document.getElementById(`size-select-${productId}`);
+        const priceDisplay = document.getElementById(`price-display-${productId}`);
+        const infoDisplay = document.getElementById(`selected-info-${productId}`);
+        const addCartBtn = document.getElementById(`add-cart-btn-${productId}`);
+
+        if (!sizeSelect || !priceDisplay || !addCartBtn) return;
+
+        const selectedOption = sizeSelect.options[sizeSelect.selectedIndex];
+
+        if (!selectedOption || !selectedOption.value) {
+            priceDisplay.textContent = 'Vui lòng chọn size';
+            priceDisplay.classList.remove('ok');
+            priceDisplay.classList.add('warn');
+
+            if (infoDisplay) {
+                infoDisplay.textContent = 'Vui lòng chọn size';
+                infoDisplay.classList.remove('ok');
+                infoDisplay.classList.add('warn');
+            }
+
+            addCartBtn.disabled = true;
+            return;
+        }
+
+        const price = parseInt(selectedOption.getAttribute('data-price')) || 0;
+        const stock = parseInt(selectedOption.getAttribute('data-stock')) || 0;
+
+        priceDisplay.textContent = `Giá: ${price.toLocaleString('vi-VN')}đ`;
+
+        if (stock > 0) {
+            priceDisplay.classList.add('ok');
+            priceDisplay.classList.remove('warn');
+
+            if (infoDisplay) {
+                infoDisplay.textContent = `Còn hàng size này (${stock})`;
+                infoDisplay.classList.add('ok');
+                infoDisplay.classList.remove('warn');
+            }
+
+            addCartBtn.disabled = false;
+            addCartBtn.style.background = '';
+            addCartBtn.style.cursor = 'pointer';
+        } else {
+            priceDisplay.classList.remove('ok');
+            priceDisplay.classList.add('warn');
+
+            if (infoDisplay) {
+                infoDisplay.textContent = 'Size này đã hết hàng';
+                infoDisplay.classList.remove('ok');
+                infoDisplay.classList.add('warn');
+            }
+
+            addCartBtn.disabled = true;
+            addCartBtn.style.background = '#cbd5e0';
+            addCartBtn.style.cursor = 'not-allowed';
+        }
+    }
+
+    function setHeaderCartCount(count) {
+        const countText = String(count);
+
+        const possibleTargets = [
+            document.getElementById('cart-count'),
+            document.getElementById('header-cart-count'),
+            document.querySelector('.cart-count'),
+            document.querySelector('[data-cart-count]')
+        ].filter(Boolean);
+
+        possibleTargets.forEach(el => {
+            el.textContent = countText;
+        });
+    }
+
+    async function addCart(productId) {
+        const sizeSelect = document.getElementById(`size-select-${productId}`);
+        let productSizeId = '';
+
+        if (sizeSelect) {
+            productSizeId = sizeSelect.value;
+
+            if (!productSizeId) {
+                alert('Vui lòng chọn size trước khi thêm vào giỏ hàng');
+                return;
+            }
+        }
+
+        try {
+            const body = new URLSearchParams();
+            body.append('id', productId);
+
+            if (productSizeId) {
+                body.append('product_size_id', productSizeId);
+            }
+
+            const res = await fetch(window.BASE_URL + 'ajax/add_cart.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body.toString()
+            });
+
+            if (!res.ok) {
+                throw new Error(`Server response: ${res.status} ${res.statusText}`);
+            }
+
+            const responseText = await res.text();
+            const data = JSON.parse(responseText);
+
+            if (data.status === 'success') {
+                alert(data.message || 'Đã thêm vào giỏ hàng');
+
+                if (typeof updateCartCount === 'function') {
+                    updateCartCount(data.cart_count);
+                } else if (data.cart_count !== undefined) {
+                    setHeaderCartCount(data.cart_count);
+                }
+            } else {
+                alert(data.message || 'Không thể thêm vào giỏ hàng');
+            }
+        } catch (error) {
+            console.error('Lỗi kết nối:', error);
+            alert('Lỗi: ' + error.message);
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('[id^="size-select-"]').forEach(select => {
+            const productId = select.id.replace('size-select-', '');
+            updateCardPrice(productId);
+        });
+    });
+</script>

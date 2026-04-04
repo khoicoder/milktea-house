@@ -117,10 +117,11 @@ if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
         }
     }
 }
-
+$product_qty = array_sum($_SESSION['cart'][$id] ?? []);
 echo json_encode([
     "status"=>"success",
     "message"=>"Đã thêm vào giỏ hàng",
-    "cart_count"=>$count
+    "cart_count"=>$count,
+    "product_qty" => $product_qty
 ]);
 exit;

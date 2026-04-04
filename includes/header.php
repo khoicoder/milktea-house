@@ -14,6 +14,7 @@ require_once(__DIR__ . "/header_logic.php"); ?>
 <link rel="stylesheet" href="<?= BASE_URL ?>css/layout.css">
 
 <?php if(isset($page_css)): ?>
+
     <link rel="stylesheet" href="<?= BASE_URL ?>css/<?= $page_css ?>">
 <?php endif; ?>
 
