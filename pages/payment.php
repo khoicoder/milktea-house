@@ -225,48 +225,64 @@ function confirmCOD() {
         btn.disabled = false;
         btn.innerHTML = "Xác nhận đặt hàng";
     });
-}
-function confirmPayment() {
-    const btn = document.getElementById('btn-confirm-payment');
+}function confirmPayment() {
+    const btn = document.getElementById("btn-confirm-payment");
     const orderId = "<?= $order_id ?>";
     const reference = "<?= $reference ?>";
+
+    if (!btn) return;
 
     btn.disabled = true;
     btn.innerHTML = "⏳ Đang xử lý...";
 
     fetch("<?= BASE_URL ?>api/confirm_payment.php", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ order_id: orderId, reference: reference })
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            order_id: orderId,
+            reference: reference
+        })
     })
     .then(res => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+        }
         return res.text();
     })
     .then(text => {
+        let data;
         console.log("RAW RESPONSE:", text);
-
+        
         try {
-        const data = JSON.parse(text);
-        console.log("Parsed data:", data);
-    } catch (e) {
-        console.error("JSON parse error:", e.message);
-    }
+            data = JSON.parse(text);
+            console.log("Parsed data:", data);
+        } catch (e) {
+            console.error("JSON parse error:", e.message);
+            alert("Lỗi: Server trả về dữ liệu không hợp lệ\n" + text);
+            btn.disabled = false;
+            btn.innerHTML = "Đã thanh toán";
+            return;
+        }
+
         if (data.success) {
+            btn.innerHTML = "✔ Thành công";
             alert("Xác nhận thanh toán thành công!");
             window.location.href = "<?= BASE_URL ?>pages/payment.php?order_id=" + data.order_id;
         } else {
             alert(data.message || "Có lỗi xảy ra");
             btn.disabled = false;
-            btn.innerHTML = "Đã thanh toán 111";
+            btn.innerHTML = "Đã thanh toán";
         }
     })
     .catch(err => {
+        console.error("Fetch error:", err);
         alert("Lỗi: " + err.message);
         btn.disabled = false;
         btn.innerHTML = "Đã thanh toán";
     });
-} 
+}
 </script>
 
 <?php include("../includes/footer.php"); ?>

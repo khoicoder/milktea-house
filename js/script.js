@@ -4,7 +4,6 @@ const BASE = window.BASE_URL ? window.BASE_URL : "/milktea-house/";
 /* ==============================
    ADD TO CART
 ============================== */
-
 function addCart(id) {
   if (!isLoggedIn) {
     alert("Bạn cần đăng nhập để thêm sản phẩm");
@@ -19,23 +18,35 @@ function addCart(id) {
     },
     body: "id=" + id,
   })
-    .then((res) => res.text()) // lấy text trước để debug nếu JSON sai
+    .then((res) => res.text())
     .then((text) => {
-      // debug: nếu JSON lỗi, log toàn bộ text để kiểm tra
       try {
         const data = JSON.parse(text);
         console.log("Add cart response:", data);
 
         if (data.message) showToast(data.message);
+
+        //  update badge cart (cũ)
         if (
           data.status === "success" &&
           typeof data.cart_count !== "undefined"
         ) {
           updateCartCount(data.cart_count);
         }
+
+        //  FIX QUAN TRỌNG: update qty ở product_detail
+        if (
+          data.status === "success" &&
+          typeof data.product_qty !== "undefined"
+        ) {
+          const el = document.getElementById("cart-qty");
+          if (el) {
+            el.textContent = data.product_qty;
+          }
+        }
       } catch (err) {
         console.error("Invalid JSON from add_cart.php:", err, text);
-        showToast("Lỗi server: response không hợp lệ. Kiểm tra console.");
+        showToast("Lỗi server: response không hợp lệ.");
       }
     })
     .catch((err) => {

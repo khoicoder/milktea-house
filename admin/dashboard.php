@@ -8,19 +8,27 @@ function get_stat($conn, $sql) {
     $row = mysqli_fetch_row($result);
     return $row ? (float)$row[0] : 0;
 }
+
+// Lấy filter từ URL, nếu chưa có thì mới dùng mặc định
 $from = !empty($_GET['from_date']) ? $_GET['from_date'] : date("Y-m-01");
 $to   = !empty($_GET['to_date']) ? $_GET['to_date'] : date("Y-m-d");
-$period  = $_GET['period'] ?? 'month';
+$period = $_GET['period'] ?? 'day';
 $chartType = $_GET['chart_type'] ?? 'bar';
 
 $totalUsers    = get_stat($conn, "SELECT COUNT(*) FROM users");
 $totalProducts = get_stat($conn, "SELECT COUNT(*) FROM products");
 $totalOrders   = get_stat($conn, "SELECT COUNT(*) FROM orders");
-$revenue       = get_stat($conn, "SELECT SUM(total) FROM orders
-    WHERE DATE(created_at)
-    BETWEEN '$from' AND '$to'");
 
-$revenue_display = number_format((float)$revenue, 0, ',', '.') . "VNĐ";
+// Doanh thu theo khoảng lọc
+$revenue = get_stat($conn, "
+    SELECT SUM(total) 
+    FROM orders
+    WHERE DATE(created_at) BETWEEN '$from' AND '$to'
+");
+
+$revenue_display = number_format((float)$revenue, 0, ',', '.') . " VNĐ";
+
+// Dữ liệu tháng hiện tại / tháng trước chỉ để tính growth
 $currentMonthStart = date("Y-m-01");
 $nextMonthStart    = date("Y-m-01", strtotime("+1 month"));
 $prevMonthStart    = date("Y-m-01", strtotime("-1 month"));
@@ -28,14 +36,14 @@ $prevMonthStart    = date("Y-m-01", strtotime("-1 month"));
 $currentMonthRevenue = get_stat($conn, "
     SELECT SUM(total) 
     FROM orders
-    WHERE DATE(created_at) >= '$currentMonthStart' 
+    WHERE DATE(created_at) >= '$currentMonthStart'
       AND DATE(created_at) < '$nextMonthStart'
 ");
 
 $lastMonthRevenue = get_stat($conn, "
     SELECT SUM(total) 
     FROM orders
-    WHERE DATE(created_at) >= '$prevMonthStart' 
+    WHERE DATE(created_at) >= '$prevMonthStart'
       AND DATE(created_at) < '$currentMonthStart'
 ");
 
@@ -66,6 +74,7 @@ $recentOrders = mysqli_query($conn, "
     ORDER BY o.created_at DESC
     LIMIT 5
 ");
+
 $statusLabels = [
     'pending'    => 'pending',
     'processing' => 'processing',
@@ -81,12 +90,11 @@ $statusLabels = [
     <title>Admin Dashboard - MilkTea House</title>
     <link rel="stylesheet" href="css/admin.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/admin_chart.js" defer >"lỗi"</script>
+    <script src="js/admin_chart.js" defer></script>
 </head>
 <body>
 <div class="layout">
 
-    <!-- ===== SIDEBAR ===== -->
     <aside class="sidebar">
         <h2>🧋 MilkTea Admin</h2>
 
@@ -98,10 +106,7 @@ $statusLabels = [
         <a href="pages/notifications.php">🔔 Thông báo</a>
     </aside>
 
-    <!-- ===== MAIN ===== -->
     <main class="main">
-
-        <!-- TOPBAR -->
         <div class="topbar">
             <div>
                 <h1>Dashboard</h1>
@@ -110,7 +115,6 @@ $statusLabels = [
             <a class="topbar-link" href="../index.php">🏠 Trang chủ</a>
         </div>
 
-        <!-- STATS -->
         <section class="stats">
             <div class="card">
                 <h3>Users</h3>
@@ -128,42 +132,41 @@ $statusLabels = [
             </div>
 
             <div class="card highlight">
-                <h3>Doanh thu</h3>
-                <p><?= $revenue_display ?></p>
-            </div>
+    <h3>Doanh thu</h3>
+    <p id="revenueTotal"><?= $revenue_display ?></p>
+</div>
         </section>
 
-        <!-- CHART -->
-        <section class="chart-box" >
+        <section class="chart-box">
             <div class="box-head">
                 <h2>📈 Doanh thu</h2>
                 <p class="subtext">Lọc theo khoảng thời gian</p>
             </div>
 
-            <form class="chart-toolbar" id="filterForm">
-                <div class="field" >
+            <form class="chart-toolbar" id="filterForm" method="GET">
+                <div class="field">
                     <label>Từ ngày</label>
-                    <input type="date" name="from_date" value="<?= date('Y-m-01') ?>">
+                    <input type="date" name="from_date" value="<?= htmlspecialchars($from) ?>">
                 </div>
 
                 <div class="field">
                     <label>Đến ngày</label>
-                    <input type="date" name = "to_date" value="<?= date('Y-m-01') ?>">
+                    <input type="date" name="to_date" value="<?= htmlspecialchars($to) ?>">
                 </div>
 
                 <div class="field">
                     <label>Nhóm theo</label>
-                    <select name="period" id="periodSelect"> >
-                        <option value="day" selected>Theo ngày</option>
-                        <option value="month">Theo tháng</option>
+                    <select name="period" id="periodSelect">
+                        <option value="day" <?= $period === 'day' ? 'selected' : '' ?>>Theo ngày</option>
+                        <option value="month" <?= $period === 'month' ? 'selected' : '' ?>>Theo tháng</option>
                     </select>
                 </div>
 
                 <div class="field">
                     <label>Kiểu chart</label>
                     <select name="chart_type" id="chartType">
-                        <option value="bar" >Bar</option>
-                        <option value="line" selected>Line</option>
+                        <option value="bar" <?= $chartType === 'bar' ? 'selected' : '' ?>>Bar</option>
+                        <option value="line" <?= $chartType === 'line' ? 'selected' : '' ?>>Line</option>
                     </select>
                 </div>
 
@@ -175,7 +178,6 @@ $statusLabels = [
             </div>
         </section>
 
-        <!-- ACTION -->
         <section class="box action">
             <div>
                 <h2>🔔 Gửi thông báo</h2>
@@ -184,17 +186,15 @@ $statusLabels = [
             <a class="btn-primary" href="pages/notifications.php" style="color: white;">Gửi ngay →</a>
         </section>
 
-        <!-- GRID -->
         <section class="grid-2">
-
             <div class="box">
                 <h2>🔥 Top sản phẩm</h2>
                 <table>
                     <tr><th>Tên</th><th>Bán</th></tr>
                     <?php while ($p = mysqli_fetch_assoc($topProducts)) { ?>
                         <tr>
-                            <td><?= $p['name'] ?></td>
-                            <td><?= $p['total'] ?></td>
+                            <td><?= htmlspecialchars($p['name']) ?></td>
+                            <td><?= (int)$p['total'] ?></td>
                         </tr>
                     <?php } ?>
                 </table>
@@ -206,16 +206,14 @@ $statusLabels = [
                     <tr><th>Username</th><th>Email</th></tr>
                     <?php while ($u = mysqli_fetch_assoc($newUsers)) { ?>
                         <tr>
-                            <td><?= $u['username'] ?></td>
-                            <td><?= $u['email'] ?></td>
+                            <td><?= htmlspecialchars($u['username']) ?></td>
+                            <td><?= htmlspecialchars($u['email']) ?></td>
                         </tr>
                     <?php } ?>
                 </table>
             </div>
-
         </section>
 
-        <!-- ORDERS -->
         <section class="box">
             <h2>🧾 Đơn hàng gần đây</h2>
             <table>
@@ -228,29 +226,26 @@ $statusLabels = [
                 </tr>
 
                 <?php while ($o = mysqli_fetch_assoc($recentOrders)) {
-                $status = trim((string)($o['status'] ?? ''));
-                if ($status === '' || !isset($statusLabels[$status])) {
-                    $status = 'pending';
-                }
-            ?>
-                <tr>
-                    <td>#<?= (int)$o['id'] ?></td>
-                    <td><?= htmlspecialchars($o['username']) ?></td>
-                    <td><?= htmlspecialchars($o['total']) ?> VNĐ</td>
-                    <td>
-                        <span class="badge <?= htmlspecialchars($status) ?>">
-                            <?= htmlspecialchars($statusLabels[$status]) ?>
-                        </span>
-                    </td>
-                    <td><?= htmlspecialchars($o['created_at']) ?></td>
+                    $status = trim((string)($o['status'] ?? ''));
+                    if ($status === '' || !isset($statusLabels[$status])) {
+                        $status = 'pending';
+                    }
+                ?>
+                    <tr>
+                        <td>#<?= (int)$o['id'] ?></td>
+                        <td><?= htmlspecialchars($o['username']) ?></td>
+                        <td><?= number_format((float)$o['total'], 0, ',', '.') ?> VNĐ</td>
+                        <td>
+                            <span class="badge <?= htmlspecialchars($status) ?>">
+                                <?= htmlspecialchars($statusLabels[$status]) ?>
+                            </span>
+                        </td>
+                        <td><?= htmlspecialchars($o['created_at']) ?></td>
                     </tr>
-                <?php 
-                } ?>
+                <?php } ?>
             </table>
         </section>
-
     </main>
 </div>
-
 </body>
 </html>
